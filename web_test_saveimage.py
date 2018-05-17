@@ -317,11 +317,13 @@ def handle_one(oriImg):
             deleteIdx.append(i)
     subset = np.delete(subset, deleteIdx, axis=0)
 
+    print subset
+    print all_peaks
+
 #    canvas = cv2.imread(test_image) # B,G,R order
     for i in range(18):
         for j in range(len(all_peaks[i])):
             cv2.circle(canvas, all_peaks[i][j][0:2], 4, colors[i], thickness=-1)
-            print all_peaks
 
     stickwidth = 4
 
@@ -347,6 +349,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process some intergers')
     parser.add_argument('--input', type=str, nargs='+',
                         help="input mp4 file name")
+    parser.add_argument('--out', type=str, nargs='+',
+                        help="output mp4 file name")
+
+    fourcc = cv2.VideoWriter_fourcc('m','p','4','v')
 
     args = parser.parse_args()
     print 'warmin `2g up'
