@@ -361,23 +361,23 @@ if __name__ == "__main__":
     ret, frame = video_capture.read()
     fourcc = cv2.VideoWriter_fourcc('m','p','4','v')
 
+    print frame.shape
+
     outfile = cv2.VideoWriter(
         str(args.output[0]) + ".mp4",
         fourcc,
         20.0,
-        frame.shape
+        (1080, 1920)
     )
 
     while True:
-        # Capture frame-by-frame
-        for i in range(20):
-            ret, frame = video_capture.read()
+        ret, frame = video_capture.read()
 
+        # Capture frame-by-frame
         try:
             canvas = handle_one(frame)
 
         # Display the resulting frame
-            cv2.imshow('Video', canvas)
             outfile.write(canvas)
         except ZeroDivisionError as err:
             # print("exception occer")
