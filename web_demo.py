@@ -341,22 +341,32 @@ def handle_one(oriImg):
             cv2.fillConvexPoly(cur_canvas, polygon, colors[i])
             canvas = cv2.addWeighted(canvas, 0.4, cur_canvas, 0.6, 0)
 
-
-
     return canvas
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process some intergers')
     parser.add_argument('--input', type=str, nargs='+',
                         help="input mp4 file name")
+    parser.add_argument('--output', type=str, nargs='+',
+                        help="output mp4 file name")
 
     args = parser.parse_args()
     print 'warmin `2g up'
     _ = handle_one(np.ones((320,320,3)))
-    
+
     # video_capture = cv2.VideoCapture(0)
     video_capture = cv2.VideoCapture(args.input[0])
     image_no = 0
+
+    ret, frame = video_capture.read()
+    fourcc = cv2.VideoWriter_fourcc('m','p','4','v')
+
+    outfile = cv2.VideoWriter(
+        str(args.output[0]) + ".mp4",
+        fourcc,
+        20.0,
+        frame.shape
+    )
 
     while True:
         # Capture frame-by-frame
@@ -368,6 +378,7 @@ if __name__ == "__main__":
 
         # Display the resulting frame
             cv2.imshow('Video', canvas)
+            outfile.write(canvas)
         except ZeroDivisionError as err:
             # print("exception occer")
             print(err)
@@ -377,6 +388,8 @@ if __name__ == "__main__":
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
+
+    outfile.release()
 
     # When everything is done, release the capture
     video_capture.release()

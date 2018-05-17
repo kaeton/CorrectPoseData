@@ -341,8 +341,6 @@ def handle_one(oriImg):
             cv2.fillConvexPoly(cur_canvas, polygon, colors[i])
             canvas = cv2.addWeighted(canvas, 0.4, cur_canvas, 0.6, 0)
 
-
-
     return canvas
 
 if __name__ == "__main__":
