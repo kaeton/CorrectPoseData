@@ -372,14 +372,13 @@ def handle_one(oriImg):
     return [canvas, pose_data]
 
 class FeatureData:
-    def __init__(self, data_1, data_2, init=False):
-        self.data_1 = data_1
-        self.data_2 = data_2
+    def __init__(self):
+        self.pose_table = []
 
     def feature_data(self, data):
         print(data)
-        for x, d in enumerate(data):
-            x = self.data_1[x] + self.data_2[x]
+        pose = [data[i] for i in range(18)]
+        print(pose)
 
     # def check_shortage_data(self, data):
 
