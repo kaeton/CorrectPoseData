@@ -316,22 +316,32 @@ def handle_one(oriImg):
             deleteIdx.append(i)
     subset = np.delete(subset, deleteIdx, axis=0)
 
+    if len(subset) == 0:
+        return 0
+
     print subset
-    print all_peaks
+    print("allpeaks", all_peaks)
 
     peak_dir = {}
     allpeaks = [i for i in all_peaks if i != []]
-    for peak in [i[0] for i in allpeaks]:
-        x, y, _, index = peak
-        peak_dir[index] = [x,y]
+    for point in allpeaks:
+        for peak in point:
+            x, y, _, index = peak
+            peak_dir[index] = [x,y]
 
     pose_data = []
-    for human in subset:
-        pose = []
-        for body_p in human[:18]:
+    for human in subset[:1]:
+        pose = {}
+        for i, body_p in enumerate(human[:18]):
+            body_p = int(body_p)
+            if body_p == -1:
+                pose[i] = []
+            else:
+            #     print("peak_dir", peak_dir)
+            #     print("body_p", body_p)
+                pose[i] = peak_dir[body_p]
             # print(body_p)
             # print(peak_dir[int(body_p)])
-            pose.append(peak_dir[int(body_p)])
 
         pose_data.append(pose)
 
@@ -341,9 +351,10 @@ def handle_one(oriImg):
             cv2.circle(canvas, all_peaks[i][j][0:2], 4, colors[i], thickness=-1)
 
     stickwidth = 4
+    print("subset len", len(subset))
 
     for i in range(17):
-        for n in range(len(subset)):
+        for n in range(1):
             index = subset[n][np.array(limbSeq[i])-1]
             if -1 in index:
                 continue
@@ -367,6 +378,8 @@ class FeatureData:
 
     def feature_data(self, data):
         print(data)
+        for x, d in enumerate(data):
+            x = self.data_1[x] + self.data_2[x]
 
     # def check_shortage_data(self, data):
 
@@ -390,16 +403,26 @@ if __name__ == "__main__":
     video_capture = cv2.VideoCapture(args.input[0])
     image_no = 0
 
+    for i in range(20):
+        ret, frame = video_capture.read()
+    try:
+        canvas, pose1 = handle_one(frame)
+        ret, frame = video_capture.read()
+        canvas, pose2 = handle_one(frame)
+        pose_recorder = FeatureData(pose1,pose2)
+
+    except ZeroDivisionError as err:
+        print(err)
+
     while True:
+        ret, frame = video_capture.read()
         # Capture frame-by-frame
-        for i in range(20):
-            ret, frame = video_capture.read()
         try:
             canvas, pose = handle_one(frame)
+            print(pose)
+            #calibrate_pose = pose_recorder.feature_data(pose)
 
-        # Display the resulting frame
         except ZeroDivisionError as err:
-            # print("exception occer")
             print(err)
 
         cv2.imwrite('./onefisheye_result/%d.jpg' % image_no, canvas)
