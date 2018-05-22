@@ -148,7 +148,6 @@ param_, model_ = config_reader()
 
  
 def handle_one(oriImg):
-    
     # for visualize
     canvas = np.copy(oriImg)
     imageToTest = Variable(T.transpose(T.transpose(T.unsqueeze(torch.from_numpy(oriImg).float(),0),2,3),1,2),volatile=True).cuda()
@@ -320,6 +319,22 @@ def handle_one(oriImg):
     print subset
     print all_peaks
 
+    peak_dir = {}
+    allpeaks = [i for i in all_peaks if i != []]
+    for peak in [i[0] for i in allpeaks]:
+        x, y, _, index = peak
+        peak_dir[index] = [x,y]
+
+    pose_data = []
+    for human in subset:
+        pose = []
+        for body_p in human[:18]:
+            # print(body_p)
+            # print(peak_dir[int(body_p)])
+            pose.append(peak_dir[int(body_p)])
+
+        pose_data.append(pose)
+
 #    canvas = cv2.imread(test_image) # B,G,R order
     for i in range(18):
         for j in range(len(all_peaks[i])):
@@ -343,7 +358,20 @@ def handle_one(oriImg):
             cv2.fillConvexPoly(cur_canvas, polygon, colors[i])
             canvas = cv2.addWeighted(canvas, 0.4, cur_canvas, 0.6, 0)
 
-    return canvas
+    return [canvas, pose_data]
+
+class FeatureData:
+    def __init__(self, data_1, data_2, init=False):
+        self.data_1 = data_1
+        self.data_2 = data_2
+
+    def feature_data(self, data):
+        print(data)
+
+    # def check_shortage_data(self, data):
+
+    # def
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process some intergers')
@@ -366,12 +394,10 @@ if __name__ == "__main__":
         # Capture frame-by-frame
         for i in range(20):
             ret, frame = video_capture.read()
-
         try:
-            canvas = handle_one(frame)
+            canvas, pose = handle_one(frame)
 
         # Display the resulting frame
-            cv2.imshow('Video', canvas)
         except ZeroDivisionError as err:
             # print("exception occer")
             print(err)
