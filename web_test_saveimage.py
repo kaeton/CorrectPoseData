@@ -335,7 +335,7 @@ def handle_one(oriImg):
         for i, body_p in enumerate(human[:18]):
             body_p = int(body_p)
             if body_p == -1:
-                pose[i] = []
+                pose[i] = [-1, -1]
             else:
             #     print("peak_dir", peak_dir)
             #     print("body_p", body_p)
@@ -376,11 +376,16 @@ class FeatureData:
         self.pose_table = []
 
     def feature_data(self, data):
-        print(data)
-        pose = [data[i] for i in range(18)]
-        print(pose)
+        for human in data:
+            pose = [human[i] for i in range(18)]
+            print("pose data feature data", pose)
+            self.pose_table.append(np.reshape(pose, 36))
 
-    # def check_shortage_data(self, data):
+    def completion_nan(self):
+        print(self.pose_table)
+        np.savetxt("pose_table.csv", self.pose_table, delimiter=",")
+        index = np.where(self.pose_table == np.nan)
+        print(index)
 
     # def
 
@@ -404,32 +409,36 @@ if __name__ == "__main__":
 
     for i in range(20):
         ret, frame = video_capture.read()
-    try:
-        canvas, pose1 = handle_one(frame)
-        ret, frame = video_capture.read()
-        canvas, pose2 = handle_one(frame)
-        pose_recorder = FeatureData(pose1,pose2)
 
-    except ZeroDivisionError as err:
-        print(err)
+    calibrate_pose = FeatureData()
 
     while True:
-        ret, frame = video_capture.read()
+        for i in range(20):
+            ret, frame = video_capture.read()
+        if ret == False:
+            break
+
         # Capture frame-by-frame
         try:
             canvas, pose = handle_one(frame)
-            print(pose)
+            print("pose", pose)
             #calibrate_pose = pose_recorder.feature_data(pose)
+            calibrate_pose.feature_data(pose)
 
         except ZeroDivisionError as err:
             print(err)
 
+        except TypeError as err:
+            print(err)
+
+        except RuntimeError as err:
+            print(err)
+
+
         cv2.imwrite('./onefisheye_result/%d.jpg' % image_no, canvas)
         image_no += 1
 
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-
+    calibrate_pose.completion_nan()
     # When everything is done, release the capture
     video_capture.release()
     cv2.destroyAllWindows()
