@@ -353,6 +353,8 @@ def handle_one(oriImg):
     stickwidth = 4
     print("subset len", len(subset))
 
+    bone_canvas = np.zeros(canvas.shape)
+
     for i in range(17):
         for n in range(1):
             index = subset[n][np.array(limbSeq[i])-1]
@@ -368,8 +370,9 @@ def handle_one(oriImg):
             polygon = cv2.ellipse2Poly((int(mY),int(mX)), (int(length/2), stickwidth), int(angle), 0, 360, 1)
             cv2.fillConvexPoly(cur_canvas, polygon, colors[i])
             canvas = cv2.addWeighted(canvas, 0.4, cur_canvas, 0.6, 0)
+            bone_canvas = cv2.addWeighted(bone_canvas, 0.4, cur_canvas, 0.6, 0)
 
-    return [canvas, pose_data]
+    return [canvas, bone_canvas, pose_data]
 
 class FeatureData:
     def __init__(self):
@@ -410,7 +413,7 @@ if __name__ == "__main__":
     for i in range(20):
         ret, frame = video_capture.read()
 
-    calibrate_pose = FeatureData()
+    # calibrate_pose = FeatureData()
 
     while True:
         for i in range(20):
@@ -420,10 +423,10 @@ if __name__ == "__main__":
 
         # Capture frame-by-frame
         try:
-            canvas, pose = handle_one(frame)
+            canvas, bone_canvas, pose = handle_one(frame)
             print("pose", pose)
             #calibrate_pose = pose_recorder.feature_data(pose)
-            calibrate_pose.feature_data(pose)
+            # calibrate_pose.feature_data(pose)
 
         except ZeroDivisionError as err:
             print(err)
@@ -436,9 +439,10 @@ if __name__ == "__main__":
 
 
         cv2.imwrite('./onefisheye_result/%d.jpg' % image_no, canvas)
+        cv2.imwrite('./onefisheye_result/bone_%d.jpg' % image_no, bone_canvas)
         image_no += 1
 
-    calibrate_pose.completion_nan()
+    #calibrate_pose.completion_nan()
     # When everything is done, release the capture
     video_capture.release()
     cv2.destroyAllWindows()
