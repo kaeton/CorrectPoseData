@@ -360,7 +360,7 @@ def handle_one(oriImg):
             index = subset[n][np.array(limbSeq[i])-1]
             if -1 in index:
                 continue
-            cur_canvas = canvas.copy()
+            cur_canvas = bone_canvas.copy()
             Y = candidate[index.astype(int), 0]
             X = candidate[index.astype(int), 1]
             mX = np.mean(X)
@@ -369,10 +369,10 @@ def handle_one(oriImg):
             angle = math.degrees(math.atan2(X[0] - X[1], Y[0] - Y[1]))
             polygon = cv2.ellipse2Poly((int(mY),int(mX)), (int(length/2), stickwidth), int(angle), 0, 360, 1)
             cv2.fillConvexPoly(cur_canvas, polygon, colors[i])
-            canvas = cv2.addWeighted(canvas, 0.4, cur_canvas, 0.6, 0)
+            # canvas = cv2.addWeighted(canvas, 0.4, cur_canvas, 0.6, 0)
             bone_canvas = cv2.addWeighted(bone_canvas, 0.4, cur_canvas, 0.6, 0)
 
-    return [canvas, bone_canvas, pose_data]
+    return [bone_canvas, pose_data]
 
 class FeatureData:
     def __init__(self):
@@ -399,6 +399,8 @@ if __name__ == "__main__":
                         help="input mp4 file name")
     parser.add_argument('--out', type=str, nargs='+',
                         help="output mp4 file name")
+    parser.add_argument('--outmovie', type=str, nargs='+',
+                        help="output mp4 file name")
 
     fourcc = cv2.VideoWriter_fourcc('m','p','4','v')
 
@@ -415,18 +417,26 @@ if __name__ == "__main__":
 
     # calibrate_pose = FeatureData()
 
+    fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
+    print(args.outmovie[0])
+    out = cv2.VideoWriter(args.outmovie[0], fourcc, 20.0, (640, 480))
+
     while True:
-        for i in range(20):
-            ret, frame = video_capture.read()
+        ret, frame = video_capture.read()
         if ret == False:
             break
 
         # Capture frame-by-frame
         try:
-            canvas, bone_canvas, pose = handle_one(frame)
-            print("pose", pose)
-            #calibrate_pose = pose_recorder.feature_data(pose)
-            # calibrate_pose.feature_data(pose)
+             bone_canvas, pose = handle_one(frame)
+             print("canvas shape", np.shape(bone_canvas))
+             print("pose", pose)
+             bone_canvas = cv2.resize(bone_canvas, (640, 480))
+             out.write(np.uint8(bone_canvas))
+             cv2.imwrite('./onefisheye_result/bone_%d.jpg' % image_no, bone_canvas)
+             image_no += 1
+            # calibrate_pose = pose_recorder.feature_data(pose)
+             # calibrate_pose.feature_data(pose)
 
         except ZeroDivisionError as err:
             print(err)
@@ -437,12 +447,10 @@ if __name__ == "__main__":
         except RuntimeError as err:
             print(err)
 
-
-        cv2.imwrite('./onefisheye_result/%d.jpg' % image_no, canvas)
-        cv2.imwrite('./onefisheye_result/bone_%d.jpg' % image_no, bone_canvas)
-        image_no += 1
+        # out.write(bone_canvas)
 
     #calibrate_pose.completion_nan()
     # When everything is done, release the capture
+    out.release()
     video_capture.release()
     cv2.destroyAllWindows()
