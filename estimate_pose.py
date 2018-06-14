@@ -30,7 +30,7 @@ class EstimatePoseMovie:
         ret, frame = src_video.read()
         while ret is True:
             frame = cv2.resize(frame,(128, 96))
-            print(np.shape(frame))
+            # print(np.shape(frame))
             # frame = np.reshape(frame, (921600,))
             frame = np.reshape(frame, (36864,))
             feature.append(frame)
@@ -73,8 +73,8 @@ class EstimatePoseMovie:
         for x, label in enumerate(use_feature):
             self.label_data.extend([x for i in self.feature[label]])
             self.train_data.extend(self.feature[label])
-            print([x for i in self.feature[label]])
-            print(np.shape(self.feature[label]))
+            # print([x for i in self.feature[label]])
+            # print(np.shape(self.feature[label]))
 
         print("shape", np.shape(self.train_data))
         print("shape", np.shape(self.label_data))
@@ -86,6 +86,8 @@ class EstimatePoseMovie:
 
         y_pred = cross_val_predict(clf, self.train_data, self.label_data, cv= KFold(n_splits=10, shuffle=True))
         conf_mat = confusion_matrix(self.label_data, y_pred)
+        print("y_pred", y_pred)
+        print("conf_mat", conf_mat)
         self.plot_confusion_matrix(conf_mat, self.label_data)
         # accuracy = cohen_kappa_score(self.label_data, y_pred)
         # conf_mat = confusion_matrix(self.label_data, y_pred)
@@ -119,5 +121,6 @@ if __name__ == "__main__":
 
     #estimator.cross_validation(use_feature=["sit", "t_pose", "raise_hands", "walking"], cross_validation=3)
     for neuron in setting["hidden_layer"]:
+        print("neuron", neuron)
         estimator.cross_validation(use_feature=label_list, cross_validation=3, hidden_neuron=neuron)
 
