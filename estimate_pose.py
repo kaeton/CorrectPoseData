@@ -27,6 +27,7 @@ class EstimatePoseMovie:
 
         # フレーム画像サイズをリサイズしてもいいかも
         ret, frame = src_video.read()
+        print(label, ret)
         while ret is True:
             frame = cv2.resize(frame,(128, 96))
             print(np.shape(frame))
@@ -85,6 +86,8 @@ class EstimatePoseMovie:
 
         y_pred = cross_val_predict(clf, self.train_data, self.label_data, cv= KFold(n_splits=10, shuffle=True))
         conf_mat = confusion_matrix(self.label_data, y_pred)
+        print(y_pred)
+        print(conf_mat)
         self.plot_confusion_matrix(conf_mat, self.label_data)
         # accuracy = cohen_kappa_score(self.label_data, y_pred)
         # conf_mat = confusion_matrix(self.label_data, y_pred)
@@ -95,17 +98,15 @@ class EstimatePoseMovie:
 
 if __name__ == "__main__":
     estimator = EstimatePoseMovie()
-    estimator.mk_feature("sit", "../experiments_data/bone_picture/one_position/sit_1.mp4")
-    estimator.mk_feature("t_pose", "../experiments_data/bone_picture/one_position/t_pose_1.mp4")
-    estimator.mk_feature("raise_hands", "../experiments_data/bone_picture/one_position/raise_hands_re_0.mp4")
-    estimator.mk_feature("walking", "../experiments_data/bone_picture/one_position/stand_1.mp4")
+    # estimator.mk_feature("sit", "../experiments_data/bone_picture/one_position/sit_1.mp4")
+    # estimator.mk_feature("t_pose", "../experiments_data/bone_picture/one_position/t_pose_1.mp4")
+    # estimator.mk_feature("raise_hands", "../experiments_data/bone_picture/one_position/raise_hands_re_0.mp4")
+    # estimator.mk_feature("walking", "../experiments_data/bone_picture/one_position/stand_1.mp4")
 
-    # estimator = EstimatePoseMovie()
-    # estimator.mk_feature("sit", "../experiments_data/bone_picture/sit_0.mp4")
-    # estimator.mk_feature("t_pose", "../experiments_data/bone_picture/t_pose_0.mp4")
-    # # estimator.mk_feature("raise_hands", "../experiments_data/bone_picture/one_position/raise_hands_re_0.mp4")
-    # estimator.mk_feature("walking", "../experiments_data/bone_picture/background_walking_bone_0.mp4")
+    estimator.mk_feature("30bpm", "../bone_clapping_motion/bpm_30_0.mp4")
+    estimator.mk_feature("60bpm", "../bone_clapping_motion/bpm_60_0.mp4")
+    estimator.mk_feature("90bpm", "../bone_clapping_motion/bpm_90_0.mp4")
+    estimator.mk_feature("120bpm","../bone_clapping_motion/bpm_120_0.mp4")
 
-    #estimator.cross_validation(use_feature=["sit", "t_pose", "raise_hands", "walking"], cross_validation=3)
-    estimator.cross_validation(use_feature=["sit", "t_pose", "raise_hands", "walking"], cross_validation=3)
-
+    # #estimator.cross_validation(use_feature=["sit", "t_pose", "raise_hands", "walking"], cross_validation=3)
+    estimator.cross_validation(use_feature=["30bpm", "60bpm", "90bpm", "120bpm"], cross_validation=3)
