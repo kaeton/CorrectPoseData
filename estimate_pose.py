@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 from sklearn import svm
+import yaml
 from sklearn.model_selection import ShuffleSplit
 from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import cross_val_predict
@@ -66,7 +67,7 @@ class EstimatePoseMovie:
         plt.ylabel('True label')
         plt.xlabel('Predicted label')
 
-    def cross_validation(self, use_feature, cross_validation):
+    def cross_validation(self, use_feature, cross_validation, hidden_neuron):
         self.train_data = []
         self.label_data = []
         for x, label in enumerate(use_feature):
@@ -79,8 +80,8 @@ class EstimatePoseMovie:
         print("shape", np.shape(self.label_data))
         print("shape", self.label_data)
         # kernel='rbf', C=1
-        clf = svm.SVC(kernel='rbf', C=200)
-        # clf = neural_network.MLPClassifier(activation="relu", hidden_layer_sizes=(100,))
+        # clf = svm.SVC(kernel='rbf', C=200)
+        clf = neural_network.MLPClassifier(activation="relu", hidden_layer_sizes=hidden_neuron)
         # print(cv)
 
         y_pred = cross_val_predict(clf, self.train_data, self.label_data, cv= KFold(n_splits=10, shuffle=True))
@@ -94,12 +95,22 @@ class EstimatePoseMovie:
 
 
 if __name__ == "__main__":
-    estimator = EstimatePoseMovie()
-    estimator.mk_feature("sit", "../experiments_data/bone_picture/one_position/sit_1.mp4")
-    estimator.mk_feature("t_pose", "../experiments_data/bone_picture/one_position/t_pose_1.mp4")
-    estimator.mk_feature("raise_hands", "../experiments_data/bone_picture/one_position/raise_hands_re_0.mp4")
-    estimator.mk_feature("walking", "../experiments_data/bone_picture/one_position/stand_1.mp4")
+    f = open("setting.yaml", "r+")
+    setting = yaml.load(f)
+    print(setting)
 
+    label_list = []
+
+    estimator = EstimatePoseMovie()
+    for i in setting["filename"]:
+        # print(i, setting["filename"][i])
+        label_list.append(i)
+        estimator.mk_feature(i, setting["filename"][i])
+
+    # estimator.mk_feature("30bpm", "../bone_clapping_motion/bpm_30_0.mp4")
+    # estimator.mk_feature("60bpm", "../bone_clapping_motion/bpm_60_0.mp4")
+    # estimator.mk_feature("90bpm", "../bone_clapping_motion/bpm_90_0.mp4")
+    # estimator.mk_feature("120bpm","../bone_clapping_motion/bpm_120_0.mp4")
     # estimator = EstimatePoseMovie()
     # estimator.mk_feature("sit", "../experiments_data/bone_picture/sit_0.mp4")
     # estimator.mk_feature("t_pose", "../experiments_data/bone_picture/t_pose_0.mp4")
@@ -107,5 +118,6 @@ if __name__ == "__main__":
     # estimator.mk_feature("walking", "../experiments_data/bone_picture/background_walking_bone_0.mp4")
 
     #estimator.cross_validation(use_feature=["sit", "t_pose", "raise_hands", "walking"], cross_validation=3)
-    estimator.cross_validation(use_feature=["sit", "t_pose", "raise_hands", "walking"], cross_validation=3)
+    for neuron in setting["hidden_layer"]:
+        estimator.cross_validation(use_feature=label_list, cross_validation=3, hidden_neuron=neuron)
 
