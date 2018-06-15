@@ -22,7 +22,6 @@ class EstimatePoseMovie:
     # def mk_feature(self, label: str, input_movie: str) -> None:
     def mk_feature(self, label, input_movie):
         # self.src_movie_title = input_movie
-        self.uselabel.append(label)
         src_video = cv2.VideoCapture(input_movie)
         feature = []
 
@@ -38,7 +37,11 @@ class EstimatePoseMovie:
             # for i in range(10):
             ret, frame = src_video.read()
 
-        self.feature[label] = feature
+        if label in self.uselabel:
+            self.feature[label].extend(feature)
+        else:
+            self.uselabel.append(label)
+            self.feature[label] = feature
 
     def plot_confusion_matrix(self, cm, classes, normalize=False, title='Confusion matrix', cmap=plt.cm.Blues):
         """
@@ -104,10 +107,11 @@ if __name__ == "__main__":
     label_list = []
 
     estimator = EstimatePoseMovie()
-    for i in setting["filename"]:
+    for label in setting["filename"]:
         # print(i, setting["filename"][i])
-        label_list.append(i)
-        estimator.mk_feature(i, setting["filename"][i])
+        label_list.append(label)
+        for filepath in setting["filename"][label]:
+            estimator.mk_feature(label, filepath)
 
     # estimator.mk_feature("30bpm", "../bone_clapping_motion/bpm_30_0.mp4")
     # estimator.mk_feature("60bpm", "../bone_clapping_motion/bpm_60_0.mp4")
