@@ -18,9 +18,9 @@ class RectangularExtraction:
             detected_image = self.detect_contour(frame)
             resizeddetected = cv2.resize(detected_image, (30,60))
             # cv2.imwrite("tmp_contourarea.jpg", bw)
-            cv2.imshow('output', resizeddetected)
-            cv2.waitKey()
-            cv2.destroyAllWindows()
+            # cv2.imshow('output', resizeddetected)
+            # cv2.waitKey()
+            # cv2.destroyAllWindows()
             extract_feature.append(resizeddetected)
 
         return extract_feature
