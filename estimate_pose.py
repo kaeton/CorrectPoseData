@@ -104,8 +104,6 @@ class EstimatePoseMovie:
         self.label_data = []
         self.train_data = []
 
-        print(self.feature)
-
         for x, label in enumerate(use_feature):
             print("x and label", x, label)
             self.label_data.extend([x for i in self.feature[label]])
