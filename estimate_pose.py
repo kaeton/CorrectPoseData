@@ -32,16 +32,19 @@ class EstimatePoseMovie:
         # フレーム画像サイズをリサイズしてもいいかも
         ret, frame = src_video.read()
         while ret is True:
-            frame = cv2.resize(frame,(128, 96))
-            # print(np.shape(frame))
-            # frame = np.reshape(frame, (921600,))
-            frame = np.reshape(frame, (36864,))
+            # frame = cv2.resize(frame, (128, 96))
+            # frame = np.reshape(frame, (36864,))
+            frame = cv2.resize(frame, (30, 60))
+            frame = np.reshape(frame, (1800,))
             feature.append(frame)
 
             # for i in range(10):
             ret, frame = src_video.read()
 
-        self.append_feature(label=label, feature=feature)
+        self.append_feature(
+            label=label,
+            feature=feature
+        )
 
     def append_feature(self, label, feature):
         if label in self.uselabel:
@@ -121,7 +124,7 @@ class EstimatePoseMovie:
 
 
 if __name__ == "__main__":
-    f = open("tmp.yaml", "r+")
+    f = open("setting.yaml", "r+")
     setting = yaml.load(f)
     print(setting)
 
