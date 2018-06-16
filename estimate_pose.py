@@ -32,10 +32,10 @@ class EstimatePoseMovie:
         # フレーム画像サイズをリサイズしてもいいかも
         ret, frame = src_video.read()
         while ret is True:
-            # frame = cv2.resize(frame, (128, 96))
-            # frame = np.reshape(frame, (36864,))
-            frame = cv2.resize(frame, (30, 60))
-            frame = np.reshape(frame, (1800,))
+            frame = cv2.resize(frame, (128, 96))
+            frame = np.reshape(frame, (36864,))
+            # frame = cv2.resize(frame, (30, 60))
+            # frame = np.reshape(frame, (1800,))
             feature.append(frame)
 
             # for i in range(10):
@@ -47,6 +47,7 @@ class EstimatePoseMovie:
         )
 
     def append_feature(self, label, feature):
+        print("append_feature frag", self.uselabel)
         if label in self.uselabel:
             self.feature[label].extend(feature)
         else:
@@ -55,14 +56,19 @@ class EstimatePoseMovie:
 
     def mk_feature_humanextraction(self, label, src):
         # extractor = RectangularExtraction(self.rectangle_size, 15)
-        try:
-            feature = self.extractor.rectangular_extraction(src=src)
-            self.append_feature(
-                label=label,
-                feature=feature
-            )
-        except:
-            return False
+        # try:
+        #     feature = self.extractor.rectangular_extraction(src=src)
+        #     self.append_feature(
+        #         label=label,
+        #         feature=feature
+        #     )
+        # except:
+        #     return False
+        feature = self.extractor.rectangular_extraction(src=src)
+        self.append_feature(
+            label=label,
+            feature=feature
+        )
 
     # eliminate few seconds from feature array
     # def eliminate_noise_feature(self):
@@ -95,9 +101,13 @@ class EstimatePoseMovie:
         plt.xlabel('Predicted label')
 
     def cross_validation(self, use_feature, cross_validation, hidden_neuron):
-        self.train_data = []
         self.label_data = []
+        self.train_data = []
+
+        print(self.feature)
+
         for x, label in enumerate(use_feature):
+            print("x and label", x, label)
             self.label_data.extend([x for i in self.feature[label]])
             self.train_data.extend(self.feature[label])
             # print([x for i in self.feature[label]])

@@ -8,21 +8,27 @@ class RectangularExtraction:
 
     def rectangular_extraction(self, src):
         extract_feature = []
+        print(src)
         src_movie = cv2.VideoCapture(src)
 
         ret, frame = src_movie.read()
-        print("frame", frame)
         while ret:
             self.detect_contour(frame)
             ret, frame = src_movie.read()
-            detected_image = self.detect_contour(frame)
+            try:
+                detected_image = self.detect_contour(frame)
+            except:
+                continue
             resizeddetected = cv2.resize(detected_image, (30,60))
+            feature_frame = np.reshape(resizeddetected, (5400,))
+
             # cv2.imwrite("tmp_contourarea.jpg", bw)
             # cv2.imshow('output', resizeddetected)
             # cv2.waitKey()
             # cv2.destroyAllWindows()
-            extract_feature.append(resizeddetected)
+            extract_feature.append(feature_frame)
 
+        print("feature generated", np.shape(extract_feature))
         return extract_feature
 
     def detect_contour(self, src): # グレースケール画像へ変換
@@ -53,7 +59,6 @@ class RectangularExtraction:
                 x, y, w, h = cv2.boundingRect(rect)
                 human_pixel.append([x, y, x + w, y + h])
 
-        print(human_pixel)
         x1 = np.min(np.array(human_pixel).T[0]) - self.offset
         y1 = np.min(np.array(human_pixel).T[1]) - self.offset
         x2 = np.max(np.array(human_pixel).T[2]) + self.offset
