@@ -13,14 +13,18 @@ from sklearn.model_selection import KFold
 import matplotlib.pyplot as plt
 import itertools
 
+from rectangular_extraction import RectangularExtraction
+
 
 class EstimatePoseMovie:
     def __init__(self):
         self.feature = {}
         self.uselabel = []
+        self.rectangle_size = (60, 30)
+        self.extractor = RectangularExtraction(self.rectangle_size, 15)
 
     # def mk_feature(self, label: str, input_movie: str) -> None:
-    def mk_feature(self, label, input_movie):
+    def mk_feature_from_moviefile(self, label, input_movie):
         # self.src_movie_title = input_movie
         src_video = cv2.VideoCapture(input_movie)
         feature = []
@@ -37,11 +41,28 @@ class EstimatePoseMovie:
             # for i in range(10):
             ret, frame = src_video.read()
 
+        self.append_feature(label=label, feature=feature)
+
+    def append_feature(self, label, feature):
         if label in self.uselabel:
             self.feature[label].extend(feature)
         else:
             self.uselabel.append(label)
             self.feature[label] = feature
+
+    def mk_feature_humanextraction(self, label, src):
+        # extractor = RectangularExtraction(self.rectangle_size, 15)
+        try:
+            feature = self.extractor.rectangular_extraction(src=src)
+            self.append_feature(
+                label=label,
+                feature=feature
+            )
+        except:
+            return False
+
+    # eliminate few seconds from feature array
+    # def eliminate_noise_feature(self):
 
     def plot_confusion_matrix(self, cm, classes, normalize=False, title='Confusion matrix', cmap=plt.cm.Blues):
         """
@@ -81,7 +102,7 @@ class EstimatePoseMovie:
 
         print("shape", np.shape(self.train_data))
         print("shape", np.shape(self.label_data))
-        print("shape", self.label_data)
+        # print("shape", self.label_data)
         # kernel='rbf', C=1
         # clf = svm.SVC(kernel='rbf', C=200)
         clf = neural_network.MLPClassifier(activation="relu", hidden_layer_sizes=hidden_neuron)
@@ -91,7 +112,7 @@ class EstimatePoseMovie:
         conf_mat = confusion_matrix(self.label_data, y_pred)
         print("y_pred", y_pred)
         print("conf_mat", conf_mat)
-        self.plot_confusion_matrix(conf_mat, self.label_data)
+        # self.plot_confusion_matrix(conf_mat, self.label_data)
         # accuracy = cohen_kappa_score(self.label_data, y_pred)
         # conf_mat = confusion_matrix(self.label_data, y_pred)
         # print("the result of neural network")
@@ -100,7 +121,7 @@ class EstimatePoseMovie:
 
 
 if __name__ == "__main__":
-    f = open("setting.yaml", "r+")
+    f = open("tmp.yaml", "r+")
     setting = yaml.load(f)
     print(setting)
 
@@ -111,7 +132,8 @@ if __name__ == "__main__":
         # print(i, setting["filename"][i])
         label_list.append(label)
         for filepath in setting["filename"][label]:
-            estimator.mk_feature(label, filepath)
+            # estimator.mk_feature_from_moviefile(label, filepath)
+            estimator.mk_feature_humanextraction(label, filepath)
 
     # estimator.mk_feature("30bpm", "../bone_clapping_motion/bpm_30_0.mp4")
     # estimator.mk_feature("60bpm", "../bone_clapping_motion/bpm_60_0.mp4")
@@ -120,11 +142,10 @@ if __name__ == "__main__":
     # estimator = EstimatePoseMovie()
     # estimator.mk_feature("sit", "../experiments_data/bone_picture/sit_0.mp4")
     # estimator.mk_feature("t_pose", "../experiments_data/bone_picture/t_pose_0.mp4")
-    # # estimator.mk_feature("raise_hands", "../experiments_data/bone_picture/one_position/raise_hands_re_0.mp4")
+    # estimator.mk_feature("raise_hands", "../experiments_data/bone_picture/one_position/raise_hands_re_0.mp4")
     # estimator.mk_feature("walking", "../experiments_data/bone_picture/background_walking_bone_0.mp4")
 
     #estimator.cross_validation(use_feature=["sit", "t_pose", "raise_hands", "walking"], cross_validation=3)
     for neuron in setting["hidden_layer"]:
         print("neuron", neuron)
         estimator.cross_validation(use_feature=label_list, cross_validation=3, hidden_neuron=neuron)
-

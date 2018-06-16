@@ -1,0 +1,6 @@
+filename:
+  30bpm:
+    - ../bone_clapping_motion/bpm_30_0.mp4
+
+hidden_layer:
+  - 10
