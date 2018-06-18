@@ -36,12 +36,12 @@ class RectangularExtraction:
     # n-frame feature -> one feature
     def use_multiple_time_frame_feature(self, feature, t=2):
         if t == 2:
-            multiple_feature = [feature[i-1].extend(x) for i, x in enumerate(feature)]
+            multiple_feature = [np.append(feature[i-1], x) for i, x in enumerate(feature)]
             del multiple_feature[0]
             return multiple_feature
 
         elif t==3:
-            multiple_feature = [feature[i-2].extend(feature[i-1]).extend(x) for i, x in enumerate(feature)]
+            multiple_feature = [np.append(feature[i-2], feature[i-1], x) for i, x in enumerate(feature)]
             del multiple_feature[0]
             del multiple_feature[1]
             return multiple_feature
