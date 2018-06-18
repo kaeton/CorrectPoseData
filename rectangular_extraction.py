@@ -29,7 +29,22 @@ class RectangularExtraction:
             extract_feature.append(feature_frame)
 
         print("feature generated", np.shape(extract_feature))
+        extract_feature = self.use_multiple_time_frame_feature(feature=extract_feature, t=2)
+        print("feature generated", np.shape(extract_feature))
         return extract_feature
+
+    # n-frame feature -> one feature
+    def use_multiple_time_frame_feature(self, feature, t=2):
+        if t == 2:
+            multiple_feature = [feature[i-1].extend(x) for i, x in enumerate(feature)]
+            del multiple_feature[0]
+            return multiple_feature
+
+        elif t==3:
+            multiple_feature = [feature[i-2].extend(feature[i-1]).extend(x) for i, x in enumerate(feature)]
+            del multiple_feature[0]
+            del multiple_feature[1]
+            return multiple_feature
 
     def detect_contour(self, src): # グレースケール画像へ変換
         gray = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
