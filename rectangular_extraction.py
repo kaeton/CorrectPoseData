@@ -34,16 +34,16 @@ class RectangularExtraction:
         return extract_feature
 
     # n-frame feature -> one feature
+    # TODO apply this code for n value
     def use_multiple_time_frame_feature(self, feature, t=2):
         if t == 2:
             multiple_feature = [np.append(feature[i-1], x) for i, x in enumerate(feature)]
-            del multiple_feature[0]
+            multiple_feature = np.delete(multiple_feature, 0, 0)
             return multiple_feature
 
         elif t==3:
             multiple_feature = [np.append(feature[i-2], feature[i-1], x) for i, x in enumerate(feature)]
-            del multiple_feature[0]
-            del multiple_feature[1]
+            multiple_feature = np.delete(multiple_feature, [0,1], 0)
             return multiple_feature
 
     def detect_contour(self, src): # グレースケール画像へ変換
