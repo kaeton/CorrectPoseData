@@ -49,7 +49,7 @@ class EstimatePoseMovie:
     def append_feature(self, label, feature):
         print("append_feature frag", self.uselabel)
         if label in self.uselabel:
-            self.feature[label].extend(feature)
+            self.feature[label] = np.append(self.feature[label], feature)
         else:
             self.uselabel.append(label)
             self.feature[label] = feature
@@ -116,8 +116,10 @@ class EstimatePoseMovie:
         # print("shape", self.label_data)
         # kernel='rbf', C=1
         # clf = svm.SVC(kernel='rbf', C=200)
-        clf = neural_network.MLPClassifier(activation="relu", hidden_layer_sizes=hidden_neuron)
-        # print(cv)
+        clf = neural_network.MLPClassifier(
+            activation="relu",
+            hidden_layer_sizes=hidden_neuron
+        )
 
         y_pred = cross_val_predict(clf, self.train_data, self.label_data, cv= KFold(n_splits=10, shuffle=True))
         conf_mat = confusion_matrix(self.label_data, y_pred)
@@ -159,4 +161,8 @@ if __name__ == "__main__":
     #estimator.cross_validation(use_feature=["sit", "t_pose", "raise_hands", "walking"], cross_validation=3)
     for neuron in setting["hidden_layer"]:
         print("neuron", neuron)
-        estimator.cross_validation(use_feature=label_list, cross_validation=3, hidden_neuron=neuron)
+        estimator.cross_validation(
+            use_feature=label_list,
+            cross_validation=3,
+            hidden_neuron=neuron
+        )
