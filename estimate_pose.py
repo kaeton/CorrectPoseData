@@ -24,16 +24,16 @@ class EstimatePoseMovie:
         self.extractor = RectangularExtraction(self.rectangle_size, 15)
 
     # def mk_feature(self, label: str, input_movie: str) -> None:
-    def mk_feature_from_moviefile(self, label, input_movie):
+    def mk_feature_from_moviefile(self, label, input_movie, reshape=True):
         # self.src_movie_title = input_movie
         src_video = cv2.VideoCapture(input_movie)
         feature = []
 
-        # フレーム画像サイズをリサイズしてもいいかも
         ret, frame = src_video.read()
         while ret is True:
-            frame = cv2.resize(frame, (128, 96))
-            frame = np.reshape(frame, (36864,))
+            if reshape is True:
+                frame = cv2.resize(frame, (128, 96))
+                frame = np.reshape(frame, (36864,))
             # frame = cv2.resize(frame, (30, 60))
             # frame = np.reshape(frame, (1800,))
             feature.append(frame)
@@ -54,6 +54,9 @@ class EstimatePoseMovie:
             self.uselabel.append(label)
             self.feature[label] = feature
 
+    # 画像全体ではなく、人周辺のみを学習させるために
+    # 矩形抽出の手法を用いて人部分のみを切り出し、それを特徴として使用している
+    # デフォルトの切り抜きサイズは60*30で固定されている
     def mk_feature_humanextraction(self, label, src):
         # extractor = RectangularExtraction(self.rectangle_size, 15)
         # try:
@@ -72,7 +75,7 @@ class EstimatePoseMovie:
 
     # eliminate few seconds from feature array
     # def eliminate_noise_feature(self):
-
+    # confusion matrixの図示用
     def plot_confusion_matrix(self, cm, classes, normalize=False, title='Confusion matrix', cmap=plt.cm.Blues):
         """
         This function prints and plots the confusion matrix.
