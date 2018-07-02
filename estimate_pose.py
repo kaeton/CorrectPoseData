@@ -47,7 +47,7 @@ class EstimatePoseMovie:
         )
 
     def append_feature(self, label, feature):
-        print("append_feature frag", self.uselabel)
+        # print("append_feature frag", self.uselabel)
         if label in self.uselabel:
             self.feature[label] = np.append(self.feature[label], feature)
         else:

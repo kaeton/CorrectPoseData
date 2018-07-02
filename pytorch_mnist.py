@@ -3,6 +3,7 @@
 
 import torchvision.transforms as transforms
 import torch
+from torch.autograd import Variable
 
 from torch.utils.data import DataLoader
 from torchvision.datasets import MNIST
@@ -21,15 +22,25 @@ train_data = MNIST('~/tmp/mnist', train=True, download=True, transform=transform
 train_loader = DataLoader(mnist_data,
                         batch_size=4,
                         shuffle=True)
+
+for data in train_loader:
+    inputs, labels = data
+
+# Variableに変換
+inputs, labels = Variable(inputs), Variable(labels)
+
+print(inputs)
+print(labels)
+
 test_data = MNIST('~/tmp/mnist', train=False, download=True, transform=transforms.ToTensor())
 test_loader = DataLoader(test_data,
                          batch_size=4,
                          shuffle=False)
 
 
-from torch.autograd import Variable
 import torch.nn as nn
 import torch.nn.functional as F
+
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()

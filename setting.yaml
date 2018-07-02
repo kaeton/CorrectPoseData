@@ -1,16 +1,16 @@
 filename:
   30bpm:
     - ../bone_clapping_motion/bpm_30_0.mp4
-    - ../bone_clapping_motion/bpm_30_1.mp4
+#    - ../bone_clapping_motion/bpm_30_1.mp4
   60bpm:
     - ../bone_clapping_motion/bpm_60_0.mp4
-    - ../bone_clapping_motion/bpm_60_1.mp4
+#    - ../bone_clapping_motion/bpm_60_1.mp4
   90bpm:
     - ../bone_clapping_motion/bpm_90_0.mp4
-    - ../bone_clapping_motion/bpm_90_1.mp4
+#    - ../bone_clapping_motion/bpm_90_1.mp4
   120bpm:
     - ../bone_clapping_motion/bpm_120_0.mp4
-    - ../bone_clapping_motion/bpm_120_1.mp4
+#    - ../bone_clapping_motion/bpm_120_1.mp4
 
 hidden_layer:
   - 10
