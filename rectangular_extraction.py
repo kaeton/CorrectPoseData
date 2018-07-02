@@ -46,7 +46,7 @@ class RectangularExtraction:
             multiple_feature = np.delete(multiple_feature, [0,1], 0)
             return multiple_feature
 
-    def detect_contour(self, src): # グレースケール画像へ変換
+    def detect_contour(self, src):
         gray = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
         retval, bw = cv2.threshold(gray, 50, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
 

@@ -73,8 +73,22 @@ class EstimatePoseMovie:
             feature=feature
         )
 
-    # eliminate few seconds from feature array
-    # def eliminate_noise_feature(self):
+    def mk_feature_humanextraction_array(self, labelarray, framearray):
+        extension_framearray = []
+        extension_labelarray = []
+        for frame, label in zip(labelarray, framearray):
+            try:
+                feature = self.extractor.rectangular_extraction(src=frame)
+                feature = cv2.resize(feature, (30, 60))
+                extension_framearray.extend(feature)
+                extension_labelarray.extend(label)
+            except:
+                continue
+
+        return [extension_labelarray, extension_framearray]
+
+
+
     # confusion matrixの図示用
     def plot_confusion_matrix(self, cm, classes, normalize=False, title='Confusion matrix', cmap=plt.cm.Blues):
         """

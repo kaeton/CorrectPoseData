@@ -26,15 +26,23 @@ class PosedataLoader:
             length = np.shape(self.label_data[i])[0]
             # feature_use = self.mk_movie_data.feature[i][:length]
             # print("feature use", np.shape(feature_use))
+            # for frame, label in zip(
+            #         self.mk_movie_data.feature[i][:length],
+            #         self.label_data[i]
+            # ):
+
+
             feature_arr.extend(self.mk_movie_data.feature[i][:length])
             print("label array shape", np.shape(self.label_data[i]))
             label_arr.extend(self.label_data[i])
 
-        # for i in self.mk_movie_data.feature:
-        #     print(i)
-        #     print(np.shape(self.mk_movie_data.feature[i]))
         use_feature = [feature_arr[i] for i, label in enumerate(label_arr) if label > 0]
         use_label = [i for i in label_arr if i > 0]
+        use_label, use_feature =\
+            self.mk_movie_data.mk_feature_humanextraction_array(
+                labelarray=use_label,
+                framearray=use_feature
+            )
         print("use feature length", np.shape(use_feature))
         print("use feature length", np.shape(use_label))
         use_feature, use_label = shuffle(use_feature, use_label, random_state=0)
@@ -51,8 +59,6 @@ class PosedataLoader:
         # self.check_feature(feature=use_feature, label=use_label)
         # for i, label in label_arr:
         #     if i <= 0:
-
-
 
     def mk_batchdata(self, feature, label, batchsize):
         start_position_each_data = \

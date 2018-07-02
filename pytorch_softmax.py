@@ -15,7 +15,7 @@ import yaml
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
-        self.fc1 = nn.Linear(28 * 28, 50)
+        self.fc1 = nn.Linear(30 * 60, 50)
         self.fc2 = nn.Linear(50, 42)
         self.fc3 = nn.Linear(42, 10)
 
@@ -70,7 +70,7 @@ if __name__ == "__main__":
 
             # 順伝播
             outputs = net(inputs)
-            if i % 1000 == 999:
+            if i % 100 == 99:
                 print(labels)
                 print(outputs)
 
@@ -85,7 +85,7 @@ if __name__ == "__main__":
 
             running_loss += loss.data[0]
 
-            if i % 1000 == 999:
+            if i % 100 == 99:
                 print('%d %d loss: %.3f' % (epoch + 1, i + 1, running_loss / 1000))
                 running_loss = 0.0
 
