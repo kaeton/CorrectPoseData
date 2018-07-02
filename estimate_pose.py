@@ -80,7 +80,7 @@ class EstimatePoseMovie:
         if labelarray != []:
             for frame, label in zip(labelarray, framearray):
                 try:
-                    feature = self.extractor.rectangular_extraction(src=frame)
+                    feature = self.extractor.detect_contour(src=frame)
                     feature = cv2.resize(feature, (30, 60))
                     extension_framearray.extend(feature)
                     extension_labelarray.extend(label)
@@ -90,7 +90,7 @@ class EstimatePoseMovie:
         else:
             for frame in framearray:
                 try:
-                    feature = self.extractor.rectangular_extraction(src=frame)
+                    feature = self.extractor.detect_contour(src=frame)
                     feature = cv2.resize(feature, (30, 60))
                     extension_framearray.extend(feature)
                 except:
