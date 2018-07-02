@@ -78,11 +78,11 @@ class EstimatePoseMovie:
         extension_framearray = []
         extension_labelarray = []
         if labelarray != []:
-            for frame, label in zip(labelarray, framearray):
+            for frame, label in zip(framearray, labelarray):
                 try:
                     feature = self.extractor.detect_contour(src=frame)
                     feature = cv2.resize(feature, (30, 60))
-                    extension_framearray.extend(feature)
+                    extension_framearray.append(feature)
                     extension_labelarray.extend(label)
                 except:
                     continue
@@ -92,14 +92,18 @@ class EstimatePoseMovie:
                 try:
                     feature = self.extractor.detect_contour(src=frame)
                     feature = cv2.resize(feature, (30, 60))
-                    extension_framearray.extend(feature)
+                    # feature = cv2.resize(feature, (60, 30))
+                    extension_framearray.append(feature)
                 except:
                     continue
 
+
+        print("origin file", np.shape(framearray))
+        print("origin file", np.shape(labelarray))
+        print("extension file", np.shape(extension_framearray))
+        print("extension file", np.shape(extension_labelarray))
+
         return [extension_labelarray, extension_framearray]
-
-
-
 
 
     # confusion matrixの図示用
