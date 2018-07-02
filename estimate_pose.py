@@ -73,19 +73,32 @@ class EstimatePoseMovie:
             feature=feature
         )
 
-    def mk_feature_humanextraction_array(self, labelarray, framearray):
+    # 特徴作成用（ラベル付き)
+    def mk_feature_humanextraction_array(self, labelarray=[], framearray=[]):
         extension_framearray = []
         extension_labelarray = []
-        for frame, label in zip(labelarray, framearray):
-            try:
-                feature = self.extractor.rectangular_extraction(src=frame)
-                feature = cv2.resize(feature, (30, 60))
-                extension_framearray.extend(feature)
-                extension_labelarray.extend(label)
-            except:
-                continue
+        if labelarray != []:
+            for frame, label in zip(labelarray, framearray):
+                try:
+                    feature = self.extractor.rectangular_extraction(src=frame)
+                    feature = cv2.resize(feature, (30, 60))
+                    extension_framearray.extend(feature)
+                    extension_labelarray.extend(label)
+                except:
+                    continue
+
+        else:
+            for frame in framearray:
+                try:
+                    feature = self.extractor.rectangular_extraction(src=frame)
+                    feature = cv2.resize(feature, (30, 60))
+                    extension_framearray.extend(feature)
+                except:
+                    continue
 
         return [extension_labelarray, extension_framearray]
+
+
 
 
 

@@ -2,10 +2,10 @@ import torchvision.transforms as transforms
 import torch
 from torch.autograd import Variable
 
-from torch.utils.data import DataLoader
-from torchvision.datasets import MNIST
 import torch.optim as optim
 from posedata_loader import PosedataLoader
+from estimate_pose import EstimatePoseMovie
+from rectangular_extraction import RectangularExtraction
 import numpy as np
 
 import torch.nn as nn
@@ -20,7 +20,7 @@ class Net(nn.Module):
         self.fc3 = nn.Linear(42, 10)
 
     def forward(self, x):
-        x = x.view(-1, 28 * 28)
+        x = x.view(-1, 30 * 60 * 3)
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         # x = F.log_softmax(self.fc3(x))
@@ -31,6 +31,8 @@ if __name__ == "__main__":
     f = open("setting.yaml", "r+")
     setting = yaml.load(f)
     print(setting)
+    # extension_instance = RectangularExtraction(resizesize=(30, 60), offset=15)
+    extension_instance = EstimatePoseMovie()
 
     label_list = []
     dataloader = PosedataLoader()
@@ -50,6 +52,7 @@ if __name__ == "__main__":
     # dataloader.get()
     train_loader = dataloader.translate(batchsize=4, use_label=["30bpm", "60bpm", "90bpm"])
     test_loader = np.array(dataloader.mk_movie_data.feature["120bpm"])
+    test_loader = extension_instance.mk_feature_humanextraction_array(framearray=test_loader)
     print(test_loader[0])
 
     net = Net()
