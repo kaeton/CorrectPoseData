@@ -41,7 +41,8 @@ class PosedataLoader:
         use_label, use_feature =\
             self.mk_movie_data.mk_feature_humanextraction_array(
                 labelarray=use_label,
-                framearray=use_feature
+                framearray=use_feature,
+                use_gray_image=True
             )
         print("use feature length", np.shape(use_feature))
         print("use feature length", np.shape(use_label))

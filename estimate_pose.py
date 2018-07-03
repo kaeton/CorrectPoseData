@@ -74,23 +74,23 @@ class EstimatePoseMovie:
         )
 
     # 特徴作成用（ラベル付き)
-    def mk_feature_humanextraction_array(self, labelarray=[], framearray=[]):
+    def mk_feature_humanextraction_array(self, use_gray_image=False, labelarray=[], framearray=[]):
         extension_framearray = []
         extension_labelarray = []
         if labelarray != []:
             for frame, label in zip(framearray, labelarray):
                 try:
-                    feature = self.extractor.detect_contour(src=frame)
+                    feature = self.extractor.detect_contour(src=frame, use_gray_image=use_gray_image)
                     feature = cv2.resize(feature, (30, 60))
                     extension_framearray.append(feature)
-                    extension_labelarray.extend(label)
+                    extension_labelarray.append(label)
                 except:
                     continue
 
         else:
             for frame in framearray:
                 try:
-                    feature = self.extractor.detect_contour(src=frame)
+                    feature = self.extractor.detect_contour(src=frame, use_gray_image=use_gray_image)
                     feature = cv2.resize(feature, (30, 60))
                     # feature = cv2.resize(feature, (60, 30))
                     extension_framearray.append(feature)

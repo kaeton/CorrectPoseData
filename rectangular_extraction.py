@@ -46,7 +46,7 @@ class RectangularExtraction:
             multiple_feature = np.delete(multiple_feature, [0,1], 0)
             return multiple_feature
 
-    def detect_contour(self, src):
+    def detect_contour(self, src, use_gray_image=False):
         gray = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
         retval, bw = cv2.threshold(gray, 50, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
 
@@ -86,6 +86,10 @@ class RectangularExtraction:
                 # detect_count = detect_count + 1
 
         # 外接矩形された画像を表示
-        cut_img = src[y1: y2, x1: x2]
+        if use_gray_image:
+            cut_img = src[y1: y2, x1: x2]
+        else:
+            cut_img = gray[y1: y2, x1: x2]
+
         return cut_img
 
