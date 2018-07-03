@@ -20,7 +20,7 @@ class Net(nn.Module):
         self.fc3 = nn.Linear(42, 10)
 
     def forward(self, x):
-        x = x.view(-1, 30 * 60 * 3)
+        x = x.view(-1, 30 * 60)
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         # x = F.log_softmax(self.fc3(x))
@@ -65,8 +65,10 @@ if __name__ == "__main__":
             inputs, labels = data
 
             # Variableに変換
-            inputs = torch.from_numpy(inputs)
-            labels = torch.from_numpy(labels)
+            # inputs = torch.from_numpy(inputs)
+            # labels = torch.from_numpy(labels)
+            inputs = torch.FloatTensor(inputs)
+            labels = torch.FloatTensor(labels)
 
             # 勾配情報をリセット
             optimizer.zero_grad()

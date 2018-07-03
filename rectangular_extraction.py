@@ -46,9 +46,12 @@ class RectangularExtraction:
             multiple_feature = np.delete(multiple_feature, [0,1], 0)
             return multiple_feature
 
+    #TODO gray scale の時に画像が３チャネルになってしまっているのを１ちゃねるだけにしておきたい
     def detect_contour(self, src, use_gray_image=False):
         gray = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
         retval, bw = cv2.threshold(gray, 50, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+
+        # print("gray", np.shape(gray))
 
         # cv2.imwrite("tmp_contourarea.jpg", bw)
         # cv2.imshow('output', bw)
@@ -86,10 +89,12 @@ class RectangularExtraction:
                 # detect_count = detect_count + 1
 
         # 外接矩形された画像を表示
-        if use_gray_image:
-            cut_img = src[y1: y2, x1: x2]
-        else:
-            cut_img = gray[y1: y2, x1: x2]
+        # if use_gray_image is True:
+        # else:
+        #     cut_img = gray[y1: y2, x1: x2]
+            # cut_img = cv2.cvtColor(cut_img, cv2.COLOR_BGR2GRAY)
+
+        cut_img = src[y1: y2, x1: x2]
+        cut_img = cv2.cvtColor(cut_img, cv2.COLOR_BGR2GRAY)
 
         return cut_img
-
