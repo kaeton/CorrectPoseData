@@ -13,6 +13,7 @@ class PosedataLoader:
         self.mk_movie_data = EstimatePoseMovie()
 
     # numpy配列からtensor dataへ変換する
+    # TODO: actionのラベルをリストに入れておくことで、どのaction labelを使うのかを定義する
     def translate(self, batchsize=4, use_label=[]):
         feature_arr = []
         label_arr = []
@@ -36,8 +37,8 @@ class PosedataLoader:
             print("label array shape", np.shape(self.label_data[i]))
             label_arr.extend(self.label_data[i])
 
-        use_feature = [feature_arr[i] for i, label in enumerate(label_arr) if label > 0]
-        use_label = [i for i in label_arr if i > 0]
+        use_feature = [feature_arr[i] for i, label in enumerate(label_arr) if label > 0 or label == 1]
+        use_label = [i for i in label_arr if i > 0 or i == 1]
         use_label, use_feature =\
             self.mk_movie_data.mk_feature_humanextraction_array(
                 labelarray=use_label,
