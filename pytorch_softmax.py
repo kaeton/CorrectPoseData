@@ -17,7 +17,7 @@ class Net(nn.Module):
         super(Net, self).__init__()
         self.fc1 = nn.Linear(30 * 60, 50)
         self.fc2 = nn.Linear(50, 42)
-        self.fc3 = nn.Linear(42, 10)
+        self.fc3 = nn.Linear(42, 3)
 
     def forward(self, x):
         x = x.view(-1, 30 * 60)
@@ -68,7 +68,7 @@ if __name__ == "__main__":
             # inputs = torch.from_numpy(inputs)
             # labels = torch.from_numpy(labels)
             inputs = torch.FloatTensor(inputs)
-            labels = torch.LongTensor(labels)
+            labels = torch.LongTensor(labels-1)
 
             # 勾配情報をリセット
             optimizer.zero_grad()
