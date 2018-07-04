@@ -68,7 +68,7 @@ if __name__ == "__main__":
             # inputs = torch.from_numpy(inputs)
             # labels = torch.from_numpy(labels)
             inputs = torch.FloatTensor(inputs)
-            labels = torch.FloatTensor(labels)
+            labels = torch.LongTensor(labels)
 
             # 勾配情報をリセット
             optimizer.zero_grad()
