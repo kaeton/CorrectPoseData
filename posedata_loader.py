@@ -37,9 +37,12 @@ class PosedataLoader:
             print("label array shape", np.shape(self.label_data[i]))
             label_arr.extend(self.label_data[i])
 
+        np.savetxt("flag1.csv", label_arr)
         use_feature = [feature_arr[i] for i, label in enumerate(label_arr) if label > 0 and label != 1]
         use_label_ = [i for i in label_arr if i > 0 and i != 1]
+        np.savetxt("flag2.csv", use_label_)
         use_label = [i-1 for i in use_label_ if i == 2]
+        np.savetxt("flag3.csv", use_label)
         use_label, use_feature =\
             self.mk_movie_data.mk_feature_humanextraction_array(
                 labelarray=use_label,
