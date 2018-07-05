@@ -46,7 +46,7 @@ if __name__ == "__main__":
             dataloader.extend_frame_by_label(
                 label=label,
                 movie_src=filepath,
-                table_src=filepath + ".csv"
+                table_src=filepath + ".rm2.csv"
             )
 
     # dataloader.get()
@@ -68,7 +68,7 @@ if __name__ == "__main__":
             # inputs = torch.from_numpy(inputs)
             # labels = torch.from_numpy(labels)
             inputs = torch.FloatTensor(inputs)
-            labels = torch.FloatTensor(labels)
+            labels = torch.LongTensor(labels-1)
 
             # 勾配情報をリセット
             optimizer.zero_grad()
