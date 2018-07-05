@@ -17,7 +17,7 @@ class Net(nn.Module):
         super(Net, self).__init__()
         self.fc1 = nn.Linear(30 * 60, 50)
         self.fc2 = nn.Linear(50, 42)
-        self.fc3 = nn.Linear(42, 3)
+        self.fc3 = nn.Linear(42, 2)
 
     def forward(self, x):
         x = x.view(-1, 30 * 60)
