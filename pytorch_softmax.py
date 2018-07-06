@@ -28,7 +28,7 @@ class Net(nn.Module):
         return x
 
 if __name__ == "__main__":
-    f = open("setting.yaml", "r+")
+    f = open("setting_train_test.yaml", "r+")
     setting = yaml.load(f)
     print(setting)
     # extension_instance = RectangularExtraction(resizesize=(30, 60), offset=15)
@@ -37,23 +37,23 @@ if __name__ == "__main__":
     label_list = []
     dataloader = PosedataLoader()
 
-    for label in setting["filename"]:
+    for label in setting["train"]:
         # print(i, setting["filename"][i])
         label_list.append(label)
-        for filepath in setting["filename"][label]:
+        for filepath in setting["train"][label]:
             # estimator.mk_feature_from_moviefile(label, filepath)
             print("label filepath", label, filepath)
             dataloader.extend_frame_by_label(
                 label=label,
                 movie_src=filepath,
-                table_src=filepath + ".rm2.csv"
+                table_src=filepath + ".csv"
             )
 
     # dataloader.get()
-    train_loader = dataloader.translate(batchsize=4, use_label=["30bpm", "60bpm", "90bpm"])
-    test_loader = np.array(dataloader.mk_movie_data.feature["120bpm"])
-    test_loader = extension_instance.mk_feature_humanextraction_array(framearray=test_loader)
-    print(test_loader[0])
+    train_loader = dataloader.translate(batchsize=4, use_label=["open", "close"])
+    # test_loader = np.array(dataloader.mk_movie_data.feature["120bpm"])
+    # test_loader = extension_instance.mk_feature_humanextraction_array(framearray=test_loader)
+    # print(test_loader[0])
 
     net = Net()
     criterion = nn.CrossEntropyLoss()
@@ -69,7 +69,7 @@ if __name__ == "__main__":
             # inputs = torch.from_numpy(inputs)
             # labels = torch.from_numpy(labels)
             inputs = torch.FloatTensor(inputs)
-            labels = torch.LongTensor(labels-1)
+            labels = torch.LongTensor(labels)
 
             # 勾配情報をリセット
             optimizer.zero_grad()
@@ -77,16 +77,12 @@ if __name__ == "__main__":
             # 順伝播
             outputs = net(inputs)
             if i % 100 == 99:
-                print(labels)
-                print(inputs)
-                print(outputs)
-
-            # ロスの計算
-            try:
-                loss = criterion(outputs, labels)
-            except:
+                print("inputs", inputs)
                 print("outputs", outputs)
                 print("labels", labels)
+
+            # ロスの計算
+            loss = criterion(outputs, labels)
 
             # 逆伝播
             loss.backward()
@@ -101,5 +97,5 @@ if __name__ == "__main__":
                 running_loss = 0.0
 
     # torch.save(net.state_dict(), "weight.pth")
-    outputs = net(test_loader)
-    print(outputs)
+    # outputs = net(test_loader)
+    # print(outputs)
