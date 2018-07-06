@@ -7,6 +7,7 @@ from posedata_loader import PosedataLoader
 from estimate_pose import EstimatePoseMovie
 from rectangular_extraction import RectangularExtraction
 import numpy as np
+import cv2
 
 import torch.nn as nn
 import torch.nn.functional as F
@@ -50,7 +51,6 @@ if __name__ == "__main__":
             )
 
     # dataloader.get()
-    train_loader = dataloader.translate(batchsize=4, use_label=["open", "close"])
     # test_loader = np.array(dataloader.mk_movie_data.feature["120bpm"])
     # test_loader = extension_instance.mk_feature_humanextraction_array(framearray=test_loader)
     # print(test_loader[0])
@@ -62,12 +62,19 @@ if __name__ == "__main__":
     for epoch in range(10):
         print(epoch, "epoch")
         running_loss = 0.0
+        train_loader = dataloader.translate(batchsize=4, use_label=["open", "close"])
         for i, data in enumerate(train_loader):
             inputs, labels = data
 
             # Variableに変換
             # inputs = torch.from_numpy(inputs)
             # labels = torch.from_numpy(labels)
+
+            # for label, frame in zip(labels, inputs):
+            #     print(type(frame))
+            #     cv2.imshow("data", frame)
+            #     cv2.waitKey()
+
             inputs = torch.FloatTensor(inputs)
             labels = torch.LongTensor(labels)
 
@@ -80,6 +87,11 @@ if __name__ == "__main__":
                 print("inputs", inputs)
                 print("outputs", outputs)
                 print("labels", labels)
+                # for label, frame in zip(labels, inputs):
+                #     cv2.imshow("data" + label, frame)
+                #     cv2.waitKey()
+
+                # cv2.destroyAllWindows()
 
             # ロスの計算
             loss = criterion(outputs, labels)

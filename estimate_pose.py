@@ -21,7 +21,7 @@ class EstimatePoseMovie:
         self.feature = {}
         self.uselabel = []
         self.rectangle_size = (60, 30)
-        self.extractor = RectangularExtraction(self.rectangle_size, 15)
+        self.extractor = RectangularExtraction(self.rectangle_size, 30)
 
     # def mk_feature(self, label: str, input_movie: str) -> None:
     def mk_feature_from_moviefile(self, label, input_movie, reshape=True):
