@@ -14,13 +14,13 @@ class PosedataLoader:
 
     # numpy配列からtensor dataへ変換する
     def translate(self, batchsize=4, use_label=[]):
+        print("use_labael", use_label)
         feature_arr = []
         label_arr = []
 
         for i in use_label:
             print("label data", i)
             print("label array shape", np.shape(self.label_data[i]))
-            print(self.label_data[i])
             print("data array shape", np.shape(self.mk_movie_data.feature[i]))
 
             length = np.shape(self.label_data[i])[0]
@@ -31,13 +31,12 @@ class PosedataLoader:
             #         self.label_data[i]
             # ):
 
-
             feature_arr.extend(self.mk_movie_data.feature[i][:length])
             print("label array shape", np.shape(self.label_data[i]))
             label_arr.extend(self.label_data[i])
 
-        use_feature = [feature_arr[i] for i, label in enumerate(label_arr) if label > 0]
-        use_label = [i for i in label_arr if i > 0]
+        use_feature = [feature_arr[i] for i, label in enumerate(label_arr) if label >= 0]
+        use_label = [i for i in label_arr if i >= 0]
         use_label, use_feature =\
             self.mk_movie_data.mk_feature_humanextraction_array(
                 labelarray=use_label,
@@ -46,8 +45,12 @@ class PosedataLoader:
             )
         print("use feature length", np.shape(use_feature))
         print("use feature length", np.shape(use_label))
-        use_feature, use_label = shuffle(use_feature, use_label, random_state=0)
+        # print("before shuffle", use_label[100:])
+        print("before shuffle", use_label[:100])
+        use_feature, use_label = shuffle(use_feature, use_label, random_state=20180706)
 
+        # print("after shuffle", use_label[:100])
+        print("after shuffle", use_label[100:])
         print("use feature length", np.shape(use_feature))
         print("use feature length", np.shape(use_label))
 
@@ -121,17 +124,17 @@ class PosedataLoader:
         self.load_csv(label=label, src=table_src)
 
 if __name__ == "__main__":
-    f = open("setting.yaml", "r+")
+    f = open("setting_train_test.yaml", "r+")
     setting = yaml.load(f)
     print(setting)
 
     label_list = []
     dataloader = PosedataLoader()
 
-    for label in setting["filename"]:
+    for label in setting["train"]:
         # print(i, setting["filename"][i])
         label_list.append(label)
-        for filepath in setting["filename"][label]:
+        for filepath in setting["train"][label]:
             # estimator.mk_feature_from_moviefile(label, filepath)
             print("label filepath", label, filepath)
             dataloader.extend_frame_by_label(
@@ -141,6 +144,6 @@ if __name__ == "__main__":
             )
 
     # dataloader.get()
-    dataloader.translate(batchsize=4, use_label=["30bpm", "60bpm"])
+    dataloader.translate(batchsize=4, use_label=["open", "close"])
 
     # dataloader.extend_frame_by_label(src=)
