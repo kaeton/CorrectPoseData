@@ -1,6 +1,7 @@
 import cv2
 import yaml
 import numpy as np
+import argparse
 
 class LabelingFrame:
     def __init__(self):
@@ -60,20 +61,23 @@ class LabelingFrame:
 if __name__ == "__main__":
     f = open("setting.yaml", "r+")
     setting = yaml.load(f)
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument('--input', type=str, nargs='+',
+                        help='input labeling movie')
 
+    argv = parser.parse_args()
 
-    for label in setting["filename"]:
-        for filepath in setting["filename"][label]:
-            frame_feature = []
-            src_video = cv2.VideoCapture(filepath)
+    for filepath in argv.input:
+        frame_feature = []
+        src_video = cv2.VideoCapture(filepath)
 
+        ret, frame = src_video.read()
+        frame_feature.append(frame)
+        while ret:
             ret, frame = src_video.read()
             frame_feature.append(frame)
-            while ret:
-                ret, frame = src_video.read()
-                frame_feature.append(frame)
 
-            labelmaker = LabelingFrame()
-            labelmaker.labeling(src=frame_feature)
-            labelmaker.output_label(out_filename=filepath+".csv")
-            # labelmaker.labeling()
+        labelmaker = LabelingFrame()
+        labelmaker.labeling(src=frame_feature)
+        labelmaker.output_label(out_filename=filepath+".csv")
+        # labelmaker.labeling()

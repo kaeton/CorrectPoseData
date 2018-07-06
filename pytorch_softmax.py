@@ -15,14 +15,14 @@ import yaml
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
-        self.fc1 = nn.Linear(30 * 60, 50)
-        self.fc2 = nn.Linear(50, 42)
-        self.fc3 = nn.Linear(42, 10)
+        self.fc1 = nn.Linear(30 * 60, 42)
+        # self.fc2 = nn.Linear(50, 42)
+        self.fc3 = nn.Linear(42, 2)
 
     def forward(self, x):
         x = x.view(-1, 30 * 60)
         x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
+        # x = F.relu(self.fc2(x))
         # x = F.log_softmax(self.fc3(x))
         x = F.softmax(self.fc3(x))
         return x
@@ -59,7 +59,8 @@ if __name__ == "__main__":
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(net.parameters(), lr=0.01)
 
-    for epoch in range(3):
+    for epoch in range(10):
+        print(epoch, "epoch")
         running_loss = 0.0
         for i, data in enumerate(train_loader):
             inputs, labels = data
@@ -77,10 +78,15 @@ if __name__ == "__main__":
             outputs = net(inputs)
             if i % 100 == 99:
                 print(labels)
+                print(inputs)
                 print(outputs)
 
             # ロスの計算
-            loss = criterion(outputs, labels)
+            try:
+                loss = criterion(outputs, labels)
+            except:
+                print("outputs", outputs)
+                print("labels", labels)
 
             # 逆伝播
             loss.backward()
