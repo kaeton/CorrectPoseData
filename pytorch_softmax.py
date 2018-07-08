@@ -62,7 +62,7 @@ if __name__ == "__main__":
     for epoch in range(10):
         print(epoch, "epoch")
         running_loss = 0.0
-        train_loader = dataloader.translate(batchsize=4, use_label=["open", "close"])
+        train_loader = dataloader.translate(batchsize=4, random_state=epoch, use_label=["open", "close"])
         for i, data in enumerate(train_loader):
             inputs, labels = data
 
