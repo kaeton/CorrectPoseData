@@ -13,6 +13,11 @@ import torch.nn as nn
 import torch.nn.functional as F
 import yaml
 
+from sklearn.model_selection import cross_val_predict
+from sklearn.metrics import confusion_matrix
+from sklearn import neural_network
+from sklearn.model_selection import KFold
+
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
@@ -59,10 +64,26 @@ if __name__ == "__main__":
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(net.parameters(), lr=0.01)
 
+
+    train, label = dataloader.translate(batchsize=None, use_label=["open", "close"])
+
+    clf = neural_network.MLPClassifier(
+        activation="relu",
+        hidden_layer_sizes=50
+    )
+    reshape_train = [np.reshape(feature, (1800,)) for feature in train]
+    print("reshape feature shjape", np.shape(reshape_train))
+    np.savetxt("image_feature.csv", reshape_train[0])
+
+    y_pred = cross_val_predict(clf, reshape_train, label, cv=KFold(n_splits=10, shuffle=True))
+    conf_mat = confusion_matrix(label, y_pred)
+    print(y_pred)
+    print(conf_mat)
+
     for epoch in range(10):
         print(epoch, "epoch")
         running_loss = 0.0
-        train_loader = dataloader.translate(batchsize=4, use_label=["open", "close"])
+        train_loader = dataloader.translate(batchsize=None, use_label=["open", "close"])
         for i, data in enumerate(train_loader):
             inputs, labels = data
 
@@ -70,10 +91,10 @@ if __name__ == "__main__":
             # inputs = torch.from_numpy(inputs)
             # labels = torch.from_numpy(labels)
 
-            # for label, frame in zip(labels, inputs):
-            #     print(type(frame))
-            #     cv2.imshow("data", frame)
-            #     cv2.waitKey()
+            for label, frame in zip(labels, inputs):
+                print(type(frame))
+                cv2.imshow("data " + str(i), frame)
+                cv2.waitKey()
 
             inputs = torch.FloatTensor(inputs)
             labels = torch.LongTensor(labels)

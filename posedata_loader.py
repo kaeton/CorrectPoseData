@@ -13,7 +13,7 @@ class PosedataLoader:
         self.mk_movie_data = EstimatePoseMovie()
 
     # numpy配列からtensor dataへ変換する
-    def translate(self, batchsize=4, use_label=[]):
+    def translate(self, batchsize=4, use_label=[], human_extraction=True):
         print("use_labael", use_label)
         feature_arr = []
         label_arr = []
@@ -50,15 +50,18 @@ class PosedataLoader:
         use_feature, use_label = shuffle(use_feature, use_label, random_state=20180706)
 
         # print("after shuffle", use_label[:100])
-        print("after shuffle", use_label[100:])
+        print("after shuffle", use_label[:100])
         print("use feature length", np.shape(use_feature))
         print("use feature length", np.shape(use_label))
 
-        return self.mk_batchdata(
-            feature=use_feature,
-            label=use_label,
-            batchsize=batchsize
-        )
+        if batchsize is not None:
+            return self.mk_batchdata(
+                feature=use_feature,
+                label=use_label,
+                batchsize=batchsize
+            )
+        else:
+            return [use_feature, use_label]
 
         # self.check_feature(feature=use_feature, label=use_label)
         # for i, label in label_arr:
