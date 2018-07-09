@@ -13,6 +13,7 @@ class PosedataLoader:
         self.mk_movie_data = EstimatePoseMovie()
 
     # numpy配列からtensor dataへ変換する
+    # TODO ; もっと細かく区切る
     def translate(self, batchsize=4, random_state=0, use_label=[]):
         print("use_labael", use_label)
         feature_arr = []
@@ -43,24 +44,15 @@ class PosedataLoader:
                 framearray=use_feature,
                 use_gray_image=True
             )
-        print("use feature length", np.shape(use_feature))
-        print("use feature length", np.shape(use_label))
-        # print("before shuffle", use_label[100:])
-        use_feature, use_label = shuffle(use_feature, use_label, random_state=random_state)
-
-        # print("after shuffle", use_label[:100])
-        print("use feature length", np.shape(use_feature))
-        print("use feature length", np.shape(use_label))
-
-        return self.mk_batchdata(
-            feature=use_feature,
-            label=use_label,
-            batchsize=batchsize
-        )
-
-        # self.check_feature(feature=use_feature, label=use_label)
-        # for i, label in label_arr:
-        #     if i <= 0:
+        if batchsize is None:
+            return [use_label, use_feature]
+        else:
+            use_feature, use_label = shuffle(use_feature, use_label, random_state=random_state)
+            return self.mk_batchdata(
+                feature=use_feature,
+                label=use_label,
+                batchsize=batchsize
+            )
 
     def mk_batchdata(self, feature, label, batchsize):
         start_position_each_data = \
@@ -103,6 +95,9 @@ class PosedataLoader:
         print(len(self.label_data))
 
     # 動画ファイルを読み込んで、行列化する
+    # label データの定義用、　30bpmとか
+    # src 動画データのパス
+    # TODO : reshape = Falseとしているが、変数名が短すぎて流石に複雑すぎる。また引数も必要とするべき
     def load_movie(self, label, src):
         self.mk_movie_data.mk_feature_from_moviefile(
             label=label,

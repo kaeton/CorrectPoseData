@@ -35,13 +35,22 @@ if __name__ == "__main__":
     # extension_instance = RectangularExtraction(resizesize=(30, 60), offset=15)
     extension_instance = EstimatePoseMovie()
 
-    label_list = []
     dataloader = PosedataLoader()
 
     for label in setting["train"]:
         # print(i, setting["filename"][i])
-        label_list.append(label)
         for filepath in setting["train"][label]:
+            # estimator.mk_feature_from_moviefile(label, filepath)
+            print("label filepath", label, filepath)
+            dataloader.extend_frame_by_label(
+                label=label,
+                movie_src=filepath,
+                table_src=filepath + ".csv"
+            )
+
+    for label in setting["test"]:
+        # print(i, setting["filename"][i])
+        for filepath in setting["test"][label]:
             # estimator.mk_feature_from_moviefile(label, filepath)
             print("label filepath", label, filepath)
             dataloader.extend_frame_by_label(
@@ -54,6 +63,19 @@ if __name__ == "__main__":
     # test_loader = np.array(dataloader.mk_movie_data.feature["120bpm"])
     # test_loader = extension_instance.mk_feature_humanextraction_array(framearray=test_loader)
     # print(test_loader[0])
+
+    # test_loader = dataloader.translate(batchsize=None, use_label=["120bpm"])
+    # test_loader = dataloader.mk_movie_data.mk_feature_humanextraction_array(
+    #     use_gray_image=True,
+    #     framearray=
+    # )
+
+    _, test_loader = dataloader.translate(
+        batchsize=None,
+        random_state=None,
+        use_label=["120bpm"]
+    )
+    print(np.shape(test_loader))
 
     net = Net()
     criterion = nn.CrossEntropyLoss()
@@ -87,6 +109,7 @@ if __name__ == "__main__":
                 print("inputs", inputs)
                 print("outputs", outputs)
                 print("labels", labels)
+
                 # for label, frame in zip(labels, inputs):
                 #     cv2.imshow("data" + label, frame)
                 #     cv2.waitKey()
@@ -109,5 +132,6 @@ if __name__ == "__main__":
                 running_loss = 0.0
 
     # torch.save(net.state_dict(), "weight.pth")
-    # outputs = net(test_loader)
+    test_loader = torch.FloatTensor(test_loader)
+    outputs = net(test_loader)
     # print(outputs)
