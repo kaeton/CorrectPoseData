@@ -20,6 +20,7 @@ class Net(nn.Module):
         # self.fc2 = nn.Linear(50, 42)
         self.fc3 = nn.Linear(42, 2)
 
+    # TODO : 出力にint 01での出力を加えるべきかも
     def forward(self, x):
         x = x.view(-1, 30 * 60)
         x = F.relu(self.fc1(x))
@@ -69,13 +70,6 @@ if __name__ == "__main__":
     #     use_gray_image=True,
     #     framearray=
     # )
-
-    _, test_loader = dataloader.translate(
-        batchsize=None,
-        random_state=None,
-        use_label=["120bpm"]
-    )
-    print(np.shape(test_loader))
 
     net = Net()
     criterion = nn.CrossEntropyLoss()
