@@ -81,7 +81,7 @@ if __name__ == "__main__":
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(net.parameters(), lr=0.01)
 
-    for epoch in range(10):
+    for epoch in range(1):
         print(epoch, "epoch")
         running_loss = 0.0
         train_loader = dataloader.translate(batchsize=4, random_state=epoch, use_label=["open", "close"])
@@ -131,7 +131,18 @@ if __name__ == "__main__":
                 print('%d %d loss: %.3f' % (epoch + 1, i + 1, running_loss / 1000))
                 running_loss = 0.0
 
-    # torch.save(net.state_dict(), "weight.pth")
-    test_loader = torch.FloatTensor(test_loader)
-    outputs = net(test_loader)
-    # print(outputs)
+    for label in setting["test"]:
+        # print(i, setting["filename"][i])
+        for filepath in setting["test"][label]:
+            print("label filepath", label, filepath)
+
+            _, test_loader = dataloader.translate(
+                batchsize=None,
+                random_state=None,
+                use_label=[label]
+            )
+            # torch.save(net.state_dict(), "weight.pth")
+            print("test loader shape", np.shape(test_loader))
+            test_loader = torch.FloatTensor(test_loader)
+            outputs = net(test_loader)
+            np.savetxt(label + "result.csv", outputs.detach().numpy(), delimiter=',')
