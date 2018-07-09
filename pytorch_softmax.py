@@ -81,7 +81,7 @@ if __name__ == "__main__":
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(net.parameters(), lr=0.01)
 
-    for epoch in range(1):
+    for epoch in range(10):
         print(epoch, "epoch")
         running_loss = 0.0
         train_loader = dataloader.translate(batchsize=4, random_state=epoch, use_label=["open", "close"])
