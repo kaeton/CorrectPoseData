@@ -29,7 +29,7 @@ class Net(nn.Module):
         return x
 
 if __name__ == "__main__":
-    f = open("setting_train_test.yaml", "r+")
+    f = open("setting_eastside.yaml", "r+")
     setting = yaml.load(f)
     print(setting)
     # extension_instance = RectangularExtraction(resizesize=(30, 60), offset=15)
