@@ -17,6 +17,8 @@ from sklearn.model_selection import cross_val_predict
 from sklearn.metrics import confusion_matrix
 from sklearn import neural_network
 from sklearn.model_selection import KFold
+from sklearn.metrics.classification import cohen_kappa_score
+
 
 class Net(nn.Module):
     def __init__(self):
@@ -66,69 +68,74 @@ if __name__ == "__main__":
 
 
     train, label = dataloader.translate(batchsize=None, use_label=["open", "close"])
+    hidden_layer = [3, 10, 50, 100]
+    for i in hidden_layer:
+        clf = neural_network.MLPClassifier(
+            activation="relu",
+            hidden_layer_sizes=i
+        )
+        reshape_train = [np.reshape(feature, (1800,)) for feature in train]
+        print("reshape feature shjape", np.shape(reshape_train))
+        np.savetxt("image_feature.csv", reshape_train[0])
 
-    clf = neural_network.MLPClassifier(
-        activation="relu",
-        hidden_layer_sizes=50
-    )
-    reshape_train = [np.reshape(feature, (1800,)) for feature in train]
-    print("reshape feature shjape", np.shape(reshape_train))
-    np.savetxt("image_feature.csv", reshape_train[0])
+        y_pred = cross_val_predict(clf, reshape_train, label, cv=KFold(n_splits=10, shuffle=True))
+        conf_mat = confusion_matrix(label, y_pred)
 
-    y_pred = cross_val_predict(clf, reshape_train, label, cv=KFold(n_splits=10, shuffle=True))
-    conf_mat = confusion_matrix(label, y_pred)
-    print(y_pred)
-    print(conf_mat)
+        # print(y_pred)
+        print(conf_mat)
+        accuracy = cohen_kappa_score(label, y_pred)
+        print("accuracy", accuracy)
 
-    for epoch in range(10):
-        print(epoch, "epoch")
-        running_loss = 0.0
-        train_loader = dataloader.translate(batchsize=None, use_label=["open", "close"])
-        for i, data in enumerate(train_loader):
-            inputs, labels = data
-
-            # Variableに変換
-            # inputs = torch.from_numpy(inputs)
-            # labels = torch.from_numpy(labels)
-
-            for label, frame in zip(labels, inputs):
-                print(type(frame))
-                cv2.imshow("data " + str(i), frame)
-                cv2.waitKey()
-
-            inputs = torch.FloatTensor(inputs)
-            labels = torch.LongTensor(labels)
-
-            # 勾配情報をリセット
-            optimizer.zero_grad()
-
-            # 順伝播
-            outputs = net(inputs)
-            if i % 100 == 99:
-                print("inputs", inputs)
-                print("outputs", outputs)
-                print("labels", labels)
-                # for label, frame in zip(labels, inputs):
-                #     cv2.imshow("data" + label, frame)
-                #     cv2.waitKey()
-
-                # cv2.destroyAllWindows()
-
-            # ロスの計算
-            loss = criterion(outputs, labels)
-
-            # 逆伝播
-            loss.backward()
-
-            # パラメータの更新
-            optimizer.step()
-
-            running_loss += loss.data[0]
-
-            if i % 100 == 99:
-                print('%d %d loss: %.3f' % (epoch + 1, i + 1, running_loss / 1000))
-                running_loss = 0.0
-
-    # torch.save(net.state_dict(), "weight.pth")
-    # outputs = net(test_loader)
-    # print(outputs)
+#
+#    for epoch in range(10):
+#        print(epoch, "epoch")
+#        running_loss = 0.0
+#        train_loader = dataloader.translate(batchsize=None, use_label=["open", "close"])
+#        for i, data in enumerate(train_loader):
+#            inputs, labels = data
+#
+#            # Variableに変換
+#            # inputs = torch.from_numpy(inputs)
+#            # labels = torch.from_numpy(labels)
+#
+#            for label, frame in zip(labels, inputs):
+#                print(type(frame))
+#                cv2.imshow("data " + str(i), frame)
+#                cv2.waitKey()
+#
+#            inputs = torch.FloatTensor(inputs)
+#            labels = torch.LongTensor(labels)
+#
+#            # 勾配情報をリセット
+#            optimizer.zero_grad()
+#
+#            # 順伝播
+#            outputs = net(inputs)
+#            if i % 100 == 99:
+#                print("inputs", inputs)
+#                print("outputs", outputs)
+#                print("labels", labels)
+#                # for label, frame in zip(labels, inputs):
+#                #     cv2.imshow("data" + label, frame)
+#                #     cv2.waitKey()
+#
+#                # cv2.destroyAllWindows()
+#
+#            # ロスの計算
+#            loss = criterion(outputs, labels)
+#
+#            # 逆伝播
+#            loss.backward()
+#
+#            # パラメータの更新
+#            optimizer.step()
+#
+#            running_loss += loss.data[0]
+#
+#            if i % 100 == 99:
+#                print('%d %d loss: %.3f' % (epoch + 1, i + 1, running_loss / 1000))
+#                running_loss = 0.0
+#
+#    # torch.save(net.state_dict(), "weight.pth")
+#    # outputs = net(test_loader)
+#    # print(outputs)
