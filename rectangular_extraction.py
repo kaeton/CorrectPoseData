@@ -20,7 +20,7 @@ class RectangularExtraction:
             except:
                 continue
             resizeddetected = cv2.resize(detected_image, (30,60))
-            feature_frame = np.reshape(resizeddetected, (5400,))
+            feature_frame = np.reshape(resizeddetected, (1800,))
 
             # cv2.imwrite("tmp_contourarea.jpg", bw)
             # cv2.imshow('output', resizeddetected)
@@ -29,7 +29,10 @@ class RectangularExtraction:
             extract_feature.append(feature_frame)
 
         print("feature generated", np.shape(extract_feature))
-        extract_feature = self.use_multiple_time_frame_feature(feature=extract_feature, t=2)
+        extract_feature = self.use_multiple_time_frame_feature(
+            feature=extract_feature,
+            t=2
+        )
         print("feature generated", np.shape(extract_feature))
         return extract_feature
 

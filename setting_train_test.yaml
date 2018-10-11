@@ -1,18 +1,18 @@
 train:
   close:
-    - ../bone_clapping_motion/clapping_motion_pose/hand_close_north_0.mp4
+    - ./bone_clapping_motion/clapping_motion_pose/hand_close_north_0.mp4
   open:
-    - ../bone_clapping_motion/clapping_motion_pose/hand_open_north_0.mp4
+    - ./bone_clapping_motion/clapping_motion_pose/hand_open_north_0.mp4
 
 test:
   30bpm:
-    - ../bone_clapping_motion/clapping_motion/north_bpm_30_0.mp4
+    - ./bone_clapping_motion/clapping_motion/north_bpm_30_0.mp4
   60bpm:
-    - ../bone_clapping_motion/clapping_motion/north_bpm_60_0.mp4
+    - ./bone_clapping_motion/clapping_motion/north_bpm_60_0.mp4
   90bpm:
-    - ../bone_clapping_motion/clapping_motion/north_bpm_90_0.mp4
+    - ./bone_clapping_motion/clapping_motion/north_bpm_90_0.mp4
   120bpm:
-    - ../bone_clapping_motion/clapping_motion/north_bpm_120_0.mp4
+    - ./bone_clapping_motion/clapping_motion/north_bpm_120_0.mp4
 
 hidden_layer:
   - 10

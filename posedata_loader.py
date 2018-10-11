@@ -14,6 +14,7 @@ class PosedataLoader:
 
     # numpy配列からtensor dataへ変換する
     # TODO ; もっと細かく区切る
+    # this batch size for training data by pytorch
     def translate(self, batchsize=4, random_state=0, use_label=[]):
         print("use_labael", use_label)
         feature_arr = []
@@ -44,15 +45,25 @@ class PosedataLoader:
                 framearray=use_feature,
                 use_gray_image=True
             )
+
+        use_feature, use_label = shuffle(use_feature, use_label, random_state=random_state)
         if batchsize is None:
             return [use_label, use_feature]
         else:
-            use_feature, use_label = shuffle(use_feature, use_label, random_state=random_state)
             return self.mk_batchdata(
                 feature=use_feature,
                 label=use_label,
                 batchsize=batchsize
             )
+
+    # image data arrayを1d変換しておく
+    def reshape(self, data, size=(1800,)):
+        reshape_data = []
+        for image in data:
+            reshaped = np.reshape(image, size)
+            reshape_data.append(reshaped)
+
+        return reshape_data
 
     def mk_batchdata(self, feature, label, batchsize):
         start_position_each_data = \
@@ -98,6 +109,8 @@ class PosedataLoader:
     # label データの定義用、　30bpmとか
     # src 動画データのパス
     # TODO : reshape = Falseとしているが、変数名が短すぎて流石に複雑すぎる。また引数も必要とするべき
+    # reshape optionはそのまま学習する際に画像データを一次元に変換しておくもの。
+    # 今回はまだ処理が残っているので、データを抽出用に使用するため、reshape はFalseとなる
     def load_movie(self, label, src):
         self.mk_movie_data.mk_feature_from_moviefile(
             label=label,
@@ -105,6 +118,7 @@ class PosedataLoader:
             reshape=False
         )
         # self.movie_data.append(frame_data)
+
 
     # csvを読み込んで行列化する
     def load_csv(self, src, label):
@@ -123,6 +137,7 @@ if __name__ == "__main__":
 
     label_list = []
     dataloader = PosedataLoader()
+    print(dataloader.__dir__())
 
     for label in setting["train"]:
         # print(i, setting["filename"][i])
@@ -137,6 +152,15 @@ if __name__ == "__main__":
             )
 
     # dataloader.get()
-    dataloader.translate(batchsize=4, use_label=["open", "close"])
+    data = dataloader.translate(batchsize=None, use_label=["open", "close"])
+    for image in data[:2]:
+        print("123")
+        # print(image)
+        # print(type(image))
+
+
+        # cv2.imshow("image %d".format(str(x)), image)
+        # cv2.waitKey()
+        # cv2.destroyAllWindows()
 
     # dataloader.extend_frame_by_label(src=)
