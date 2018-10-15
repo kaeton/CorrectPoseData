@@ -2,12 +2,13 @@ from estimate_pose import EstimatePoseMovie
 from posedata_loader import PosedataLoader
 import yaml
 from sklearn.cluster import DBSCAN
+from sklearn.cluster import KMeans
 from sklearn.metrics import confusion_matrix
 import numpy as np
 
-f = open("setting.yaml", "r+")
-setting = yaml.load(f)
-print(setting)
+# f = open("setting.yaml", "r+")
+# setting = yaml.load(f)
+# print(setting)
 
 label_list = []
 
@@ -43,7 +44,8 @@ label_np = np.array(label)
 # print(np.shape(np.array(train_loader)))
 # data_2d = dataloader.reshape_1D(data)
 data_2d = dataloader.reshape(data)
-clf = DBSCAN(eps=1.5, min_samples=2)
+# clf = DBSCAN(eps=1.5, min_samples=2)
+clf = KMeans(n_clusters=2, random_state=10)
 result = clf.fit(data_2d)
 result.get_params()
 y_dbscan = result.labels_

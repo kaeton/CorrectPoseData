@@ -1,6 +1,7 @@
 import numpy as np
 import yaml
 import cv2
+import pandas as pd
 from estimate_pose import EstimatePoseMovie
 from sklearn.utils import shuffle
 
@@ -15,7 +16,8 @@ class PosedataLoader:
     # numpy配列からtensor dataへ変換する
     # TODO ; もっと細かく区切る
     # this batch size for training data by pytorch
-    def translate(self, batchsize=4, random_state=0, use_label=[]):
+    # shuffle : 与えられたデータをシャッフルする。シード値はrandom_stateで決定する
+    def translate(self, batchsize=4, do_shuffle=True, random_state=0, use_label=[]):
         print("use_labael", use_label)
         feature_arr = []
         label_arr = []
@@ -39,14 +41,25 @@ class PosedataLoader:
 
         use_feature = [feature_arr[i] for i, label in enumerate(label_arr) if label >= 0]
         use_label = [i for i in label_arr if i >= 0]
-        use_label, use_feature =\
+        use_label, use_feature_2d =\
             self.mk_movie_data.mk_feature_humanextraction_array(
                 labelarray=use_label,
                 framearray=use_feature,
                 use_gray_image=True
             )
 
-        use_feature, use_label = shuffle(use_feature, use_label, random_state=random_state)
+        print("labelj")
+        print(np.shape(use_label))
+        print("feature 2d")
+        print(np.shape(use_feature))
+
+        list_arr = {'label': use_label, 'feature_2d': use_feature}
+        feature_df = pd.DataFrame(list_arr)
+
+        if do_shuffle is True:
+            use_feature, use_label = \
+                shuffle(use_feature, use_label, random_state=random_state)
+
         if batchsize is None:
             return [use_label, use_feature]
         else:
