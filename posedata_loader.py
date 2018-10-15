@@ -53,19 +53,28 @@ class PosedataLoader:
         print("feature 2d")
         print(np.shape(use_feature))
 
-        list_arr = {'label': use_label, 'feature_2d': use_feature}
+        list_arr = {'label': use_label, 'feature_2d': use_feature_2d}
         feature_df = pd.DataFrame(list_arr)
+        feature_df['feature_1d'] = self.reshape(data=feature_df["feature_2d"], size=(1800,))
+
+        # feature_df['feature_1d'] = [self.reshape(data=x, size=(1800,)) for x in feature_df["feature_2d"]]
+        
+        # self.reshape(
+        #         data=feature_df["feature_2d"], 
+        #         size=(1800,)
+        # )
 
         if do_shuffle is True:
-            use_feature, use_label = \
-                shuffle(use_feature, use_label, random_state=random_state)
+            feature_df = feature_df.sample(frac=1)
+            # use_feature, use_label = \
+            #     shuffle(use_feature, use_label, random_state=random_state)
 
         if batchsize is None:
-            return [use_label, use_feature]
+            return feature_df
         else:
             return self.mk_batchdata(
-                feature=use_feature,
-                label=use_label,
+                feature=feature_df["feature_1d"],
+                label=feature_df["label"],
                 batchsize=batchsize
             )
 
@@ -144,30 +153,56 @@ class PosedataLoader:
         self.load_csv(label=label, src=table_src)
 
 if __name__ == "__main__":
+    # f = open("setting_train_test.yaml", "r+")
+    # setting = yaml.load(f)
+    # print(setting)
+    #
+    # label_list = []
+    # dataloader = PosedataLoader()
+    # print(dataloader.__dir__())
+    #
+    # for label in setting["train"]:
+    #     # print(i, setting["filename"][i])
+    #     label_list.append(label)
+    #     for filepath in setting["train"][label]:
+    #         # estimator.mk_feature_from_moviefile(label, filepath)
+    #         print("label filepath", label, filepath)
+    #         dataloader.extend_frame_by_label(
+    #             label=label,
+    #             movie_src=filepath,
+    #             table_src=filepath + ".csv"
+    #         )
+    #
+    # # dataloader.get()
+    # data = dataloader.translate(batchsize=None, use_label=["open", "close"])
+
+
+    label_list = []
+
     f = open("setting_train_test.yaml", "r+")
     setting = yaml.load(f)
     print(setting)
+    # extension_instance = RectangularExtraction(resizesize=(30, 60), offset=15)
+    extension_instance = EstimatePoseMovie()
 
-    label_list = []
     dataloader = PosedataLoader()
-    print(dataloader.__dir__())
 
-    for label in setting["train"]:
-        # print(i, setting["filename"][i])
-        label_list.append(label)
-        for filepath in setting["train"][label]:
-            # estimator.mk_feature_from_moviefile(label, filepath)
-            print("label filepath", label, filepath)
-            dataloader.extend_frame_by_label(
-                label=label,
-                movie_src=filepath,
-                table_src=filepath + ".csv"
-            )
+    label = "120bpm"
+    for filepath in setting["test"][label]:
+        # estimator.mk_feature_from_moviefile(label, filepath)
+        print("label filepath", label, filepath)
+        dataloader.extend_frame_by_label(
+            label=label,
+            movie_src=filepath,
+            table_src=filepath + ".csv"
+        )
 
-    # dataloader.get()
-    data = dataloader.translate(batchsize=None, use_label=["open", "close"])
-    for image in data[:2]:
-        print("123")
+    # label, data = dataloader.translate(
+    feature_df = dataloader.translate(
+        batchsize=None,
+        random_state=1,
+        use_label=[label]
+    )
         # print(image)
         # print(type(image))
 

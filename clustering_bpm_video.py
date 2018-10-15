@@ -5,6 +5,7 @@ from sklearn.cluster import DBSCAN
 from sklearn.cluster import KMeans
 from sklearn.metrics import confusion_matrix
 import numpy as np
+import cv2
 
 
 label_list = []
@@ -27,19 +28,30 @@ for filepath in setting["test"][label]:
         table_src=filepath + ".csv"
     )
 
-label, data = dataloader.translate(
+# label, data = dataloader.translate(
+feature_df = dataloader.translate(
     batchsize=None,
     random_state=1,
+    do_shuffle=False,
     use_label=[label]
 )
+
 label_np = np.array(label)
-# print(np.shape(np.array(train_loader)))
-# data_2d = dataloader.reshape_1D(data)
-data_2d = dataloader.reshape(data)
 # clf = DBSCAN(eps=1.5, min_samples=2)
 clf = KMeans(n_clusters=2, random_state=10)
-result = clf.fit(data_2d)
+result = clf.fit(list(feature_df["feature_1d"]))
 result.get_params()
 y_dbscan = result.labels_
-matrix_result = confusion_matrix(label, y_dbscan)
+
+x_dbscan = result.cluster_centers_
+# x_dbscan = result.components_
+x_dbscan
+matrix_result = confusion_matrix(feature_df["label"], y_dbscan)
 matrix_result
+
+for result_label, image in zip(y_dbscan, feature_df["feature_2d"][:4]):
+    print(y_dbscan)
+    print(image)
+    cv2.imshow(winname=result_label, mat=np.array(image))
+    cv2.waitKey()
+    cv2.destroyAllWindows()
