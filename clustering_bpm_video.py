@@ -18,7 +18,7 @@ extension_instance = EstimatePoseMovie()
 
 dataloader = PosedataLoader()
 
-label = "120bpm"
+label = "30bpm"
 for filepath in setting["test"][label]:
     # estimator.mk_feature_from_moviefile(label, filepath)
     print("label filepath", label, filepath)
@@ -37,21 +37,29 @@ feature_df = dataloader.translate(
 )
 
 label_np = np.array(label)
-# clf = DBSCAN(eps=1.5, min_samples=2)
-clf = KMeans(n_clusters=2, random_state=10)
+clf = DBSCAN(eps=0.01, min_samples=2)
+# clf = KMeans(n_clusters=2, random_state=10)
 result = clf.fit(list(feature_df["feature_1d"]))
 result.get_params()
 y_dbscan = result.labels_
+y_dbscan
 
-x_dbscan = result.cluster_centers_
-# x_dbscan = result.components_
+# x_dbscan = result.cluster_centers_
+x_dbscan = result.components_
 x_dbscan
 matrix_result = confusion_matrix(feature_df["label"], y_dbscan)
 matrix_result
 
-for result_label, image in zip(y_dbscan, feature_df["feature_2d"][:4]):
-    print(y_dbscan)
+for result_label, image in zip(y_dbscan, feature_df["feature_2d"]):
     print(image)
-    cv2.imshow(winname=result_label, mat=np.array(image))
-    cv2.waitKey()
+    print(result_label)
+    cv2.imshow(winname=str(result_label), mat=np.array(image))
+    key = cv2.waitKey()
+    if key is "q":
+        break
     cv2.destroyAllWindows()
+
+image = feature_df["feature_2d"][0]
+cv2.imshow("test", image)
+cv2.waitKey()
+cv2.destroyAllWindows()

@@ -39,15 +39,23 @@ for label in setting["train"]:
             table_src=filepath + ".csv"
         )
 
-label, data = dataloader.translate(batchsize=None, random_state=1, use_label=["open", "close"])
+# label, data = dataloader.translate(batchsize=None, random_state=1, use_label=["open", "close"])
+
+feature_df = dataloader.translate(
+    batchsize=None,
+    random_state=1,
+    do_shuffle=False,
+    use_label=["open", "close"]
+)
 label_np = np.array(label)
 # print(np.shape(np.array(train_loader)))
 # data_2d = dataloader.reshape_1D(data)
-data_2d = dataloader.reshape(data)
-# clf = DBSCAN(eps=1.5, min_samples=2)
-clf = KMeans(n_clusters=2, random_state=10)
-result = clf.fit(data_2d)
+# data_2d = dataloader.reshape(data)
+clf = DBSCAN(eps=1.5, min_samples=2)
+# clf = KMeans(n_clusters=2, random_state=10)
+result = clf.fit(list(feature_df["feature_1d"]))
 result.get_params()
 y_dbscan = result.labels_
+y_dbscan
 matrix_result = confusion_matrix(label, y_dbscan)
 matrix_result
