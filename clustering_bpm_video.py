@@ -18,7 +18,7 @@ extension_instance = EstimatePoseMovie()
 
 dataloader = PosedataLoader()
 
-label = "30bpm"
+label = "120bpm"
 for filepath in setting["test"][label]:
     # estimator.mk_feature_from_moviefile(label, filepath)
     print("label filepath", label, filepath)
@@ -37,18 +37,21 @@ feature_df = dataloader.translate(
 )
 
 label_np = np.array(label)
-clf = DBSCAN(eps=0.01, min_samples=2)
-# clf = KMeans(n_clusters=2, random_state=10)
+# clf = DBSCAN(eps=1.2, min_samples=2)
+clf = KMeans(n_clusters=4, random_state=10)
 result = clf.fit(list(feature_df["feature_1d"]))
 result.get_params()
 y_dbscan = result.labels_
 y_dbscan
 
-# x_dbscan = result.cluster_centers_
-x_dbscan = result.components_
+x_dbscan = result.cluster_centers_
+# x_dbscan = result.components_
 x_dbscan
 matrix_result = confusion_matrix(feature_df["label"], y_dbscan)
 matrix_result
+matrix_result = np.array(matrix_result, dtype='int64')
+np.shape(matrix_result)
+np.savetxt("out_matrix.csv", matrix_result, delimiter=",")
 
 for result_label, image in zip(y_dbscan, feature_df["feature_2d"]):
     print(image)

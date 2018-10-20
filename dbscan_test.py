@@ -57,5 +57,5 @@ result = clf.fit(list(feature_df["feature_1d"]))
 result.get_params()
 y_dbscan = result.labels_
 y_dbscan
-matrix_result = confusion_matrix(label, y_dbscan)
+matrix_result = confusion_matrix(list(feature_df["label"]), y_dbscan)
 matrix_result

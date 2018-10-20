@@ -83,7 +83,8 @@ class EstimatePoseMovie:
                     feature = self.extractor.detect_contour(src=frame, use_gray_image=use_gray_image)
                     feature = cv2.resize(feature, (30, 60))
                     # pytorchの場合は0-1データに整形が必要のため
-                    # feature = feature/255.0
+                    # dbscanでも０−１データに整形する必要がある
+                    feature = feature/255.0
                     extension_framearray.append(feature)
                     extension_labelarray.append(label)
                 except:
@@ -95,7 +96,7 @@ class EstimatePoseMovie:
                     feature = self.extractor.detect_contour(src=frame, use_gray_image=use_gray_image)
                     feature = cv2.resize(feature, (30, 60))
                     # pytorchの場合は0-1データに整形が必要のため
-                    # feature = feature/255.0
+                    feature = feature/255.0
                     extension_framearray.append(feature)
                 except:
                     continue
