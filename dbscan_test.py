@@ -3,6 +3,7 @@ from posedata_loader import PosedataLoader
 import yaml
 from sklearn.cluster import DBSCAN
 from sklearn.cluster import KMeans
+from gmm import Model
 from sklearn.metrics import confusion_matrix
 import numpy as np
 
@@ -51,11 +52,19 @@ label_np = np.array(label)
 # print(np.shape(np.array(train_loader)))
 # data_2d = dataloader.reshape_1D(data)
 # data_2d = dataloader.reshape(data)
-clf = DBSCAN(eps=1.5, min_samples=2)
+
+
+
+# clf = DBSCAN(eps=1.5, min_samples=2)
 # clf = KMeans(n_clusters=2, random_state=10)
-result = clf.fit(list(feature_df["feature_1d"]))
-result.get_params()
-y_dbscan = result.labels_
-y_dbscan
-matrix_result = confusion_matrix(list(feature_df["label"]), y_dbscan)
+clf = Model()
+
+result = clf.fit(
+    X=list(feature_df["feature_1d"]),
+    do_show=False
+)
+# result.get_params()
+# y_dbscan = result.labels_
+# y_dbscan
+matrix_result = confusion_matrix(list(feature_df["label"]), result)
 matrix_result

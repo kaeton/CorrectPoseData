@@ -3,6 +3,7 @@ from posedata_loader import PosedataLoader
 import yaml
 from sklearn.cluster import DBSCAN
 from sklearn.cluster import KMeans
+from gmm import Model
 from sklearn.metrics import confusion_matrix
 import numpy as np
 import cv2
@@ -38,22 +39,25 @@ feature_df = dataloader.translate(
 
 label_np = np.array(label)
 # clf = DBSCAN(eps=1.2, min_samples=2)
-clf = KMeans(n_clusters=4, random_state=10)
-result = clf.fit(list(feature_df["feature_1d"]))
-result.get_params()
-y_dbscan = result.labels_
-y_dbscan
+# clf = KMeans(n_clusters=4, random_state=10)
+clf = Model()
 
-x_dbscan = result.cluster_centers_
-# x_dbscan = result.components_
-x_dbscan
-matrix_result = confusion_matrix(feature_df["label"], y_dbscan)
+result = clf.fit(
+    X=list(feature_df["feature_1d"]),
+    do_show=False
+)
+result = clf.fit(list(feature_df["feature_1d"]), do_show=False)
+# result.get_params()
+# y_pred = result.predict(feature_df["feature_1d"])
+y_pred = result
+
+matrix_result = confusion_matrix(feature_df["label"], y_pred)
 matrix_result
 matrix_result = np.array(matrix_result, dtype='int64')
 np.shape(matrix_result)
 np.savetxt("out_matrix.csv", matrix_result, delimiter=",")
 
-for result_label, image in zip(y_dbscan, feature_df["feature_2d"]):
+for result_label, image in zip(y_pred, feature_df["feature_2d"]):
     print(image)
     print(result_label)
     cv2.imshow(winname=str(result_label), mat=np.array(image))
