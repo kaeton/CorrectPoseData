@@ -56,15 +56,23 @@ label_np = np.array(label)
 
 
 # clf = DBSCAN(eps=1.5, min_samples=2)
-# clf = KMeans(n_clusters=2, random_state=10)
-clf = Model()
+clf = KMeans(n_clusters=2, random_state=10)
+result = clf.fit(list(feature_df["feature_1d"]))
 
-result = clf.fit(
-    X=list(feature_df["feature_1d"]),
-    do_show=False
-)
+###################################
+# for gaussian mixture
+###################################
+# clf = Model()
+# result = clf.fit(
+#     X=list(feature_df["feature_1d"]),
+#     do_show=False
+# )
+# matrix_result = confusion_matrix(list(feature_df["label"]), result)
+###################################
+
+
 # result.get_params()
-# y_dbscan = result.labels_
+y_dbscan = result.labels_
 # y_dbscan
-matrix_result = confusion_matrix(list(feature_df["label"]), result)
+matrix_result = confusion_matrix(list(feature_df["label"]), y_dbscan)
 matrix_result

@@ -3,10 +3,13 @@ from posedata_loader import PosedataLoader
 import yaml
 from sklearn.cluster import DBSCAN
 from sklearn.cluster import KMeans
+from sklearn.mixture import GaussianMixture
 from gmm import Model
 from sklearn.metrics import confusion_matrix
 import numpy as np
 import cv2
+import matplotlib.pyplot as plt
+from PIL import Image
 
 
 label_list = []
@@ -38,18 +41,26 @@ feature_df = dataloader.translate(
 )
 
 label_np = np.array(label)
-# clf = DBSCAN(eps=1.2, min_samples=2)
-# clf = KMeans(n_clusters=4, random_state=10)
-clf = Model()
+clf = DBSCAN(eps=1.2, min_samples=2)
+# clf = KMeans(n_clusters=2, random_state=10)
+# clf = GaussianMixture(
+#     n_components=2,
+#     covariance_type='full',
+#     random_state=5
+# )
+# gaussian mixture model test
+##############################################
+# clf = Model()
+# result = clf.fit(
+#     X=list(feature_df["feature_1d"]),
+#     do_show=False
+# )
+# y_pred = result
+##############################################
 
-result = clf.fit(
-    X=list(feature_df["feature_1d"]),
-    do_show=False
-)
-result = clf.fit(list(feature_df["feature_1d"]), do_show=False)
-# result.get_params()
-# y_pred = result.predict(feature_df["feature_1d"])
-y_pred = result
+result = clf.fit(list(feature_df["feature_1d"]))
+# y_pred = result.predict(list(feature_df["feature_1d"]))
+y_pred = result.labels_
 
 matrix_result = confusion_matrix(feature_df["label"], y_pred)
 matrix_result
@@ -57,14 +68,20 @@ matrix_result = np.array(matrix_result, dtype='int64')
 np.shape(matrix_result)
 np.savetxt("out_matrix.csv", matrix_result, delimiter=",")
 
+
 for result_label, image in zip(y_pred, feature_df["feature_2d"]):
     print(image)
     print(result_label)
-    cv2.imshow(winname=str(result_label), mat=np.array(image))
-    key = cv2.waitKey()
-    if key is "q":
-        break
-    cv2.destroyAllWindows()
+    plt.title(str(result_label))
+    plt.imshow(np.array(image))
+    plt.show()
+
+
+    # cv2.imshow(winname=str(result_label), mat=np.array(image))
+    # key = cv2.waitKey()
+    # if key is "q":
+    #     break
+    # cv2.destroyAllWindows()
 
 image = feature_df["feature_2d"][0]
 cv2.imshow("test", image)
