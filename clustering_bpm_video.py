@@ -10,6 +10,7 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 from PIL import Image
+from save_clustering_image import save_clustering_image
 import os
 
 
@@ -42,7 +43,7 @@ feature_df = dataloader.translate(
 )
 
 label_np = np.array(label)
-examdirname = "result_classification/exam1102_dbscan_1.0/"
+examdirname = "result_classification/test/"
 clf = DBSCAN(eps=0.9, min_samples=2)
 # clf = KMeans(n_clusters=2, random_state=10)
 # clf = GaussianMixture(
@@ -70,25 +71,8 @@ matrix_result
 # np.shape(matrix_result)
 # np.savetxt("out_matrix.csv", matrix_result, delimiter=",")
 
-label_list = list(set(y_pred))
-label_list
-for label in label_list:
-    os.makedirs(examdirname + str(label))
-
-i = 0
-for result_label, image in zip(y_pred, feature_df["feature_2d"]):
-    print(image)
-    print(result_label)
-    # plt.title(str(result_label))
-    # plt.imshow(np.array(image))
-    # plt.show()
-
-    print(examdirname + str(label) + "/" + str(i) + ".png")
-    cv2.imwrite(examdirname + str(result_label) + "/" + str(i) + ".png", 255 * np.array(image))
-    i += 1
-    # cv2.imshow(winname=str(result_label), mat=np.array(image))
-    # key = cv2.waitKey()
-    # print("key", key)
-    # if key is "q":
-    #     break
-    # cv2.destroyAllWindows()
+save_clustering_image(
+    examdirname=examdirname,
+    cluster_label=y_pred,
+    cluster_image=feature_df["feature_2d"]
+)
